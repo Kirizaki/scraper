@@ -35,10 +35,10 @@ jobs:
           git config --global user.name 'github-actions'
           git config --global user.email 'actions@github.com'
 
-          # Pobierz najnowsze zmiany z zdalnej gałęzi
-          git fetch origin main
-          git checkout main
-          git pull --rebase origin main
+          # # Pobierz najnowsze zmiany z repozytorium
+          # git fetch origin main
+          # git checkout main
+          # git pull --rebase origin main
 
           # Dodaj pliki CSV oraz flagę (jeśli istnieją)
           if [ -f "wyniki.csv" ]; then git add wyniki.csv; fi
