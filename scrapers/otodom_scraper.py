@@ -22,12 +22,14 @@ class OtodomScraper(RealEstateScraper):
 
             for offer in offer_articles:
                 address = offer.find("p", class_="css-1jjm9oe e13d3jhg1") or offer.find("p", class_="css-42r2ms eejmx80")
-                if not address or "wrzeszcz" not in address.text.lower():
-                    continue
+                # if not address or "wrzeszcz" not in address.text.lower():
+                #     continue
 
                 link = BASE_URL + offer.find("a")['href'].split('?')[0]
-                if is_offer_saved(link):
-                    continue
+                # if is_offer_saved(link):
+                #     continue
+
+                print(f'Nowa oferta: {link}')
 
                 detail_res = requests.get(link, headers={"User-Agent": "Mozilla/5.0"})
                 detail_soup = BeautifulSoup(detail_res.text, "html.parser")
