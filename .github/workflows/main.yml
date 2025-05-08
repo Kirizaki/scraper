@@ -26,7 +26,9 @@ jobs:
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'actions@github.com'
-          git add oferty_mieszkan.csv prev_oferty.csv notify.flag
+          for file in oferty_mieszkan.csv prev_oferty.csv notify.flag; do
+            if [ -f "$file" ]; then git add "$file"; fi
+          done
           git commit -m "Update CSV" || echo "No changes"
           git push
 
