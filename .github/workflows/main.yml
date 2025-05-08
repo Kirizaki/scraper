@@ -60,7 +60,7 @@ jobs:
             echo "notify=no" >> $GITHUB_OUTPUT
           fi
 
-      - name: Send SMS if new offers found
+      - name: Send WhatsApp notify if new offers found
         if: steps.check_notify.outputs.notify == 'yes'
         env:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
@@ -69,7 +69,7 @@ jobs:
           TWILIO_TO: ${{ secrets.TWILIO_TO_NUMBER }}
         run: |
           curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
+            --data-urlencode "From=whatsapp:+14155238886" \
+            --data-urlencode "To=whatsapp:$TWILIO_TO" \
             --data-urlencode "Body=📢 Nowe oferty: https://raw.githubusercontent.com/Kirizaki/scraper/main/wyniki.csv" \
-            --data-urlencode "From=$TWILIO_FROM" \
-            --data-urlencode "To=$TWILIO_TO" \
             -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
