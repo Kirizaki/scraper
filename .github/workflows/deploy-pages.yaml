@@ -1,0 +1,33 @@
+name: Deploy wyniki.html to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install deps (if any)
+        run: pip install -r requirements.txt || true
+
+      - name: Generate wyniki.html
+        run: python generate_html.py
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages
+          force_orphan: true
+          keep_files: false
