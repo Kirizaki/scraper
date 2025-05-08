@@ -34,22 +34,31 @@ jobs:
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'actions@github.com'
-          
-          # # Pobierz najnowsze zmiany z repozytorium
-          # git fetch origin main
-          # git checkout main
-          # git pull --rebase origin main
 
-          # Dodaj tylko zmodyfikowane pliki (np. wyniki.csv, prev_oferty.csv, notify.flag)
+          # Pobierz najnowsze zmiany z zdalnej gałęzi
+          git fetch origin main
+          git checkout main
+          git pull --rebase origin main
+
+          # Dodaj pliki CSV oraz flagę (jeśli istnieją)
           if [ -f "wyniki.csv" ]; then git add wyniki.csv; fi
           if [ -f "prev_oferty.csv" ]; then git add prev_oferty.csv; fi
           if [ -f "notify.flag" ]; then git add notify.flag; fi
 
-          # Zrób commit, jeśli są zmiany
+          # Zrób commit, jeśli coś zostało dodane
           git commit -m "Update CSV" || echo "No changes to commit"
 
-          # Push z autoryzacją przez GITHUB_TOKEN
+          # Pushuj zmiany przy użyciu tokena
           git push https://x-access-token:${TOKEN}@github.com/${{ github.repository }} HEAD:main
+
+      - name: Check if notify.flag exists
+        id: check_notify
+        run: |
+          if [ -f notify.flag ]; then
+            echo "notify=yes" >> $GITHUB_OUTPUT
+          else
+            echo "notify=no" >> $GITHUB_OUTPUT
+          fi
 
       - name: Send SMS if new offers found
         if: steps.check_notify.outputs.notify == 'yes'
