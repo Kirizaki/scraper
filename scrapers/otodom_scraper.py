@@ -11,10 +11,24 @@ class OtodomScraper(RealEstateScraper):
     def scrape(self):
         offers = []
         page = 1
+        # last_real_page = None
+        last_real_page = None
+        # while True:
         while True:
             url = f"{BASE_URL}/pl/wyniki/sprzedaz/mieszkanie/pomorskie/gdansk?viewType=listing&page={page}"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             soup = BeautifulSoup(res.text, "html.parser")
+
+            # Wyciągamy numer strony z URL
+            current_page = self.get_page_number_from_url(url)
+            if current_page is None:
+                print("Błąd podczas wyciągania numeru strony!")
+                break
+
+            # Jeśli numer strony się nie zmienia, oznacza to, że osiągnęliśmy ostatnią stronę
+            if current_page == last_real_page:
+                print("Osiągnięto koniec listy ofert.")
+                break
 
             offer_articles = soup.find_all("article", attrs={"data-cy": "listing-item"})
             if not offer_articles:
@@ -56,3 +70,11 @@ class OtodomScraper(RealEstateScraper):
             page += 1
             time.sleep(1)
         return offers
+
+    def get_page_number_from_url(self, url):
+        """Zwraca numer strony wyciągnięty z URL"""
+        parsed_url = urlparse(url)
+        page_number = parse_qs(parsed_url.query).get('page', [None])[0]
+        if page_number:
+            return int(page_number)
+        return None
