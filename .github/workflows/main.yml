@@ -53,7 +53,7 @@ jobs:
           TWILIO_TO: ${{ secrets.TWILIO_TO_NUMBER }}
         run: |
           curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
-            --data-urlencode "Body=📢 Nowe oferty mieszkań dostępne w CSV!" \
+            --data-urlencode "Body=📢 Nowe oferty: https://raw.githubusercontent.com/Kirizaki/scraper/main/wyniki.csv" \
             --data-urlencode "From=$TWILIO_FROM" \
             --data-urlencode "To=$TWILIO_TO" \
             -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
