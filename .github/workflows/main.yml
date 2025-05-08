@@ -25,11 +25,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run scraper
-        run: python main.py
+      # - name: Run scraper
+      #   run: python main.py
 
       - name: Generate HTML
-        run: python generate_html.py
+        run: |
+          python generate_html.py
+          if [ -f "wyniki.html" ]; then git add wyniki.html; fi
+          git commit -m "Update HTML" || echo "No changes to commit"
+
 
       - name: Commit CSV
         env:
