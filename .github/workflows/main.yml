@@ -31,11 +31,20 @@ jobs:
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'actions@github.com'
+      
+          # Dodaj pliki tylko jeśli istnieją
           for file in oferty_mieszkan.csv prev_oferty.csv notify.flag; do
             if [ -f "$file" ]; then git add "$file"; fi
           done
+      
           git commit -m "Update CSV" || echo "No changes"
+      
+          # Dociągnij najnowsze zmiany z main zanim wypchniesz
+          git pull --rebase origin main
+      
+          # Push z autoryzacją
           git push https://x-access-token:${TOKEN}@github.com/${{ github.repository }} HEAD:main
+
 
 
       - name: Check for new offers
