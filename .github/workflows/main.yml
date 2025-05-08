@@ -66,10 +66,16 @@ jobs:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
           TWILIO_FROM: ${{ secrets.TWILIO_FROM_NUMBER }}
-          TWILIO_TO: ${{ secrets.TWILIO_TO_NUMBER }}
+          TWILIO_TO_ONE: ${{ secrets.TWILIO_TO_NUMBER_ONE }}
+          TWILIO_TO_TWO: ${{ secrets.TWILIO_TO_NUMBER_TWO }}
         run: |
           curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
-            --data-urlencode "From=whatsapp:+14155238886" \
-            --data-urlencode "To=whatsapp:$TWILIO_TO" \
+            --data-urlencode "From=whatsapp:$TWILIO_FROM" \
+            --data-urlencode "To=whatsapp:$TWILIO_TO_ONE" \
+            --data-urlencode "Body=📢 Nowe oferty: https://raw.githubusercontent.com/Kirizaki/scraper/main/wyniki.csv" \
+            -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
+          curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
+            --data-urlencode "From=whatsapp:$TWILIO_FROM" \
+            --data-urlencode "To=whatsapp:$TWILIO_TO_TWO" \
             --data-urlencode "Body=📢 Nowe oferty: https://raw.githubusercontent.com/Kirizaki/scraper/main/wyniki.csv" \
             -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
