@@ -2,13 +2,12 @@ name: Run Scraper
 
 on:
   schedule:
-    - cron: '0 */2 * * *'  # co 2 godziny, o pełnej godzinie
-  workflow_dispatch:       # pozwala ręcznie odpalić
+    - cron: '0 */2 * * *'  # co 2h
+  workflow_dispatch:
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
 
@@ -18,8 +17,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Run scraper
         run: python main.py
@@ -28,6 +26,26 @@ jobs:
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'actions@github.com'
-          git add *.csv
-          git commit -m "Update CSV" || echo "No changes to commit"
+          git add oferty_mieszkan.csv prev_oferty.csv notify.flag
+          git commit -m "Update CSV" || echo "No changes"
           git push
+
+      - name: Check for new offers
+        id: check_notify
+        run: |
+          FLAG=$(cat notify.flag)
+          echo "notify=$FLAG" >> $GITHUB_OUTPUT
+
+      - name: Send SMS if new offers found
+        if: steps.check_notify.outputs.notify == 'yes'
+        env:
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_FROM: ${{ secrets.TWILIO_FROM_NUMBER }}
+          TWILIO_TO: ${{ secrets.TWILIO_TO_NUMBER }}
+        run: |
+          curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
+            --data-urlencode "Body=📢 Nowe oferty mieszkań dostępne w CSV!" \
+            --data-urlencode "From=$TWILIO_FROM" \
+            --data-urlencode "To=$TWILIO_TO" \
+            -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
