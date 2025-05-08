@@ -2,25 +2,28 @@ name: Run Scraper
 
 on:
   schedule:
-    - cron: '0 */2 * * *'  # co 2h
+    - cron: '0 */2 * * *'  # co 2 godziny
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  run-script:
+  run-scraper:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v2
         with:
-          python-version: '3.11'
+          python-version: '3.x'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Run scraper
         run: python main.py
@@ -31,25 +34,22 @@ jobs:
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'actions@github.com'
-      
-          git fetch origin main
-          git checkout main
-          git pull --rebase origin main
-      
-          # Dodaj tylko śledzone (ignorując np. __pycache__)
+          
+          # # Pobierz najnowsze zmiany z repozytorium
+          # git fetch origin main
+          # git checkout main
+          # git pull --rebase origin main
+
+          # Dodaj tylko zmodyfikowane pliki (np. wyniki.csv, prev_oferty.csv, notify.flag)
           if [ -f "wyniki.csv" ]; then git add wyniki.csv; fi
           if [ -f "prev_oferty.csv" ]; then git add prev_oferty.csv; fi
           if [ -f "notify.flag" ]; then git add notify.flag; fi
-      
-          git commit -m "Update CSV" || echo "No changes to commit"
-          
-          git push https://x-access-token:${TOKEN}@github.com/${{ github.repository }} HEAD:main
 
-      - name: Check for new offers
-        id: check_notify
-        run: |
-          FLAG=$(cat notify.flag)
-          echo "notify=$FLAG" >> $GITHUB_OUTPUT
+          # Zrób commit, jeśli są zmiany
+          git commit -m "Update CSV" || echo "No changes to commit"
+
+          # Push z autoryzacją przez GITHUB_TOKEN
+          git push https://x-access-token:${TOKEN}@github.com/${{ github.repository }} HEAD:main
 
       - name: Send SMS if new offers found
         if: steps.check_notify.outputs.notify == 'yes'
@@ -60,7 +60,7 @@ jobs:
           TWILIO_TO: ${{ secrets.TWILIO_TO_NUMBER }}
         run: |
           curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
-          --data-urlencode "To=whatsapp:$TWILIO_TO_NUMBER" \
-          --data-urlencode "From=whatsapp:$TWILIO_FROM_NUMBER" \
-          --data-urlencode "Body=📢 Nowe oferty: https://raw.githubusercontent.com/Kirizaki/scraper/main/wyniki.csv" \
-          -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
+            --data-urlencode "Body=📢 Nowe oferty: https://raw.githubusercontent.com/Kirizaki/scraper/main/wyniki.csv" \
+            --data-urlencode "From=$TWILIO_FROM" \
+            --data-urlencode "To=$TWILIO_TO" \
+            -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
