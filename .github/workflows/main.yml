@@ -57,8 +57,6 @@ jobs:
           FLAG=$(cat notify.flag)
           echo "notify=$FLAG" >> $GITHUB_OUTPUT
 
-      - name: Send SMS if new offers found
-
       - name: Send WhatsApp notify if new offers found
         if: steps.check_notify.outputs.notify == 'yes'
         env:
