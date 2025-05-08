@@ -15,8 +15,8 @@ class OlxScraper(RealEstateScraper):
 
         offers = []
         for link in links:
-            if is_offer_saved(link):
-                continue
+            # if is_offer_saved(link):
+            #     continue
 
             try:
                 res = requests.get(link, headers={'User-Agent': 'Mozilla/5.0'})
