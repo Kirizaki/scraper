@@ -65,13 +65,13 @@ jobs:
         id: check_notify
         run: |
           if [ -f notify.flag ]; then
-            FLAG=$(cat notify.flag)
+            echo "notify=yes" >> $GITHUB_OUTPUT
           else
-            FLAG="no"
+            echo "notify=no" >> $GITHUB_OUTPUT
           fi
-          echo "notify=$FLAG" >> $GITHUB_OUTPUT
 
       - name: Send WhatsApp notify if new offers found
+        if: steps.check_notify.outputs.notify == 'yes'
         env:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
@@ -79,26 +79,12 @@ jobs:
           TWILIO_TO_ONE: ${{ secrets.TWILIO_TO_NUMBER_ONE }}
           TWILIO_TO_TWO: ${{ secrets.TWILIO_TO_NUMBER_TWO }}
         run: |
-          if [ -f notify.flag ]; then
-            FLAG=$(cat notify.flag)
-            if [ "$FLAG" == "yes" ]; then
-              echo "Nowe oferty znalezione!"
-              curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
-                --data-urlencode "From=whatsapp:$TWILIO_FROM" \
-                --data-urlencode "To=whatsapp:$TWILIO_TO_ONE" \
-                --data-urlencode "Body=📢 Nowe oferty: https://kirizaki.github.io/scraper/wyniki.html" \
-                -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
+          echo "📢 Nowe oferty znalezione, wysyłam powiadomienia..."
 
-              curl -X GET https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages/SM6b411ffd8bc4b19b8d29568064cd439b.json \
-                  -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
-
-              curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
-                --data-urlencode "From=whatsapp:$TWILIO_FROM" \
-                --data-urlencode "To=whatsapp:$TWILIO_TO_TWO" \
-                --data-urlencode "Body=📢 Nowe oferty: https://kirizaki.github.io/scraper/wyniki.html" \
-                -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
-
-              curl -X GET https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages/SM6b411ffd8bc4b19b8d29568064cd439b.json \
-                  -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
-            fi
-          fi
+          for TO in "$TWILIO_TO_ONE" "$TWILIO_TO_TWO"; do
+            curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
+              --data-urlencode "From=whatsapp:$TWILIO_FROM" \
+              --data-urlencode "To=whatsapp:$TO" \
+              --data-urlencode "Body=📢 Nowe oferty: https://kirizaki.github.io/scraper/wyniki.html" \
+              -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
+          done

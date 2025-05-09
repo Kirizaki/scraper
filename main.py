@@ -36,8 +36,13 @@ def main():
             print(f"✅ Zapisano nową ofertę: {offer['url']}")
             new_count += 1
 
-    with open("notify.flag", "w") as f:
-        f.write("yes" if new_count > 0 else "no")
+    if new_count > 0:
+        with open('notify.flag', 'w') as f:
+            f.write('yes')
+    else:
+        import os
+        if os.path.exists('notify.flag'):
+            os.remove('notify.flag') 
 
     elapsed = time.time() - start
     print(f"⏱️ Skrypt wykonał się w {elapsed:.2f} sekund.")

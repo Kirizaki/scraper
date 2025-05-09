@@ -17,7 +17,7 @@ class RealEstateScraper(ABC):
     def date_now(self):
         # Pobranie bieżącej daty i godziny
         now = datetime.now()
-        return now.strftime("%H, %d %m %Y")  # Format: godzina, dzień miesiąc rok
+        return now.strftime("%H-%d-%m-%Y")  # Format: godzina-dzień-miesiąc-rok
 
     def backup(self, offers):
         if not offers:
