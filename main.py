@@ -17,7 +17,7 @@ def main():
     init_csv()
 
     # scrapers = [OlxScraper, GratkaScraper, MorizonScraper, AdresowoScraper]
-    scrapers = [MorizonScraper]
+    scrapers = [MorizonScraper, OlxScraper, GratkaScraper, MorizonScraper, AdresowoScraper, OtodomScraper]
 
     offers_all = []
     with ThreadPoolExecutor(max_workers=len(scrapers)) as executor:
