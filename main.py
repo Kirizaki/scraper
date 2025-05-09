@@ -1,7 +1,6 @@
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from csv_writer import init_csv, is_offer_saved, save_offer
-from utils.spinner import Spinner
 from scrapers.otodom_scraper import OtodomScraper
 from scrapers.olx_scraper import OlxScraper
 from scrapers.gratka_scraper import GratkaScraper
@@ -19,8 +18,6 @@ def main():
 
     # scrapers = [OlxScraper, GratkaScraper, MorizonScraper, AdresowoScraper]
     scrapers = [MorizonScraper]
-    spinner = Spinner("🔍 Szukam ofert...")
-    spinner.start()
 
     offers_all = []
     with ThreadPoolExecutor(max_workers=len(scrapers)) as executor:
@@ -31,8 +28,6 @@ def main():
                 offers_all.extend(offers)
             except Exception as e:
                 print(f"⚠️ Błąd w jednym ze scraperów: {e}")
-
-    spinner.stop()
 
     new_count = 0
     for offer in offers_all:
