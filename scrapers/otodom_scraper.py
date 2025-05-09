@@ -11,10 +11,10 @@ class OtodomScraper(RealEstateScraper):
     def scrape(self):
         offers = []
         page = 1
-        # last_real_page = None
         last_real_page = None
-        # while True:
         while True:
+            if page > 1:    ## DEBUG CODE!
+                return offers
             url = f"{BASE_URL}/pl/wyniki/sprzedaz/mieszkanie/pomorskie/gdansk?viewType=listing&page={page}"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             soup = BeautifulSoup(res.text, "html.parser")
@@ -40,9 +40,6 @@ class OtodomScraper(RealEstateScraper):
                 #     continue
 
                 link = BASE_URL + offer.find("a")['href'].split('?')[0]
-                # if is_offer_saved(link):
-                #     continue
-
                 print(f'Nowa oferta: {link}')
 
                 detail_res = requests.get(link, headers={"User-Agent": "Mozilla/5.0"})

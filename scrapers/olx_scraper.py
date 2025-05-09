@@ -15,20 +15,27 @@ class OlxScraper(RealEstateScraper):
 
         offers = []
         for link in links:
-            # if is_offer_saved(link):
-            #     continue
-
             try:
                 res = requests.get(link, headers={'User-Agent': 'Mozilla/5.0'})
                 soup = BeautifulSoup(res.text, 'html.parser')
+                title = 'brak'
+                for header in soup.find_all("h4"):
+                    if header.attrs.get('class')[0] == "css-10ofhqw":
+                        title = header.text.strip()
+                price = soup.find("h3", class_="css-fqcbii").text.strip()
                 body = soup.get_text(separator=' ', strip=True)
                 garden, snippet = has_garden(body)
+                area_val = "brak"
+                for p in soup.find_all("p", class_="css-1los5bp"):
+                    if "powierzchnia" in p.text.lower():
+                        area_val = p.text.strip()
                 if garden:
                     offers.append({
                         "url": link,
-                        "dzielnica": "Gdańsk",
-                        "cena": "Brak",
-                        "powierzchnia": "Brak",
+                        "title": title,
+                        "dzielnica": "Wrzeszcz",
+                        "cena": price,
+                        "powierzchnia": area_val,
                         "ogrod_fragment": snippet,
                         "zrodlo": "olx",
                         "data_dodania": super().date_now()
