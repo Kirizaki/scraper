@@ -73,7 +73,6 @@ jobs:
           echo "notify=$FLAG" >> $GITHUB_OUTPUT
 
       - name: Send WhatsApp notify if new offers found
-        # if: steps.check_notify.outputs.notify == 'yes'
         env:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
@@ -83,16 +82,17 @@ jobs:
         run: |
           if [ -f notify.flag ]; then
             FLAG=$(cat notify.flag)
-          if [ "$FLAG" == "yes" ]; then
-            echo "Nowe oferty znalezione!"
-            curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
-              --data-urlencode "From=whatsapp:$TWILIO_FROM" \
-              --data-urlencode "To=whatsapp:$TWILIO_TO_ONE" \
-              --data-urlencode "Body=📢 Nowe oferty: https://kirizaki.github.io/scraper/wyniki.html" \
-              -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
-            curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
-              --data-urlencode "From=whatsapp:$TWILIO_FROM" \
-              --data-urlencode "To=whatsapp:$TWILIO_TO_TWO" \
-              --data-urlencode "Body=📢 Nowe oferty: https://kirizaki.github.io/scraper/wyniki.html" \
-              -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
+            if [ "$FLAG" == "yes" ]; then
+              echo "Nowe oferty znalezione!"
+              curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
+                --data-urlencode "From=whatsapp:$TWILIO_FROM" \
+                --data-urlencode "To=whatsapp:$TWILIO_TO_ONE" \
+                --data-urlencode "Body=📢 Nowe oferty: https://kirizaki.github.io/scraper/wyniki.html" \
+                -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
+              curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
+                --data-urlencode "From=whatsapp:$TWILIO_FROM" \
+                --data-urlencode "To=whatsapp:$TWILIO_TO_TWO" \
+                --data-urlencode "Body=📢 Nowe oferty: https://kirizaki.github.io/scraper/wyniki.html" \
+                -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
+            fi
           fi
