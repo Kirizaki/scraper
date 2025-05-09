@@ -6,7 +6,6 @@ from csv_writer import save_offer_backup
 
 class RealEstateScraper(ABC):
     def __init__(self) -> None:
-        self.__init__()
         self.counter = 0
         self.src = '..'
 

@@ -46,7 +46,7 @@ class MorizonScraper(RealEstateScraper):
                     "powierzchnia": area_val,
                     "ogrod_fragment": snippet,
                     "zrodlo": "adresowo",
-                    "data_dodania": self.date_now()
+                    "data_dodania": super().date_now()
                 }
                 offers.append(offer)
                 save_offer_backup(offer, self.src+".csv")     
