@@ -19,7 +19,7 @@ class GratkaScraper(RealEstateScraper):
 
             if current_page is None or current_page < page:
                 break
-            print(f"\n   [{self.src}] przeszukuje stronę (#{page}): {url}")
+            print(f"\n   [{self.src}]\t\t\tprzeszukuje stronę (#{page}): {url}")
 
             offer_articles = soup.find_all("a", class_="RGqjO2 undefined")
             if not offer_articles:
@@ -47,7 +47,7 @@ class GratkaScraper(RealEstateScraper):
                     "powierzchnia": area_val,
                     "ogrod_fragment": snippet,
                     "zrodlo": self.src,
-                    "data_dodania": super().date_now()
+                    "data_dodania": self.date_now()
                 }
                 offers.append(offer)
                 save_offer_backup(offer, self.src+".csv")

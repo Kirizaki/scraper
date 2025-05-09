@@ -17,7 +17,7 @@ class MorizonScraper(RealEstateScraper):
             real_page = self.get_page_number(res.url)
             if not real_page or int(real_page) < page:
                 break
-            print(f"\n   [{self.src}] przeszukuje stronę (#{page}): {url}")
+            print(f"\n   [{self.src}]\t\t\tprzeszukuje stronę (#{page}): {url}")
             soup = BeautifulSoup(res.text, "html.parser")
 
             offer_articles = soup.find_all("a", class_="RGqjO2 undefined")
@@ -46,7 +46,7 @@ class MorizonScraper(RealEstateScraper):
                     "powierzchnia": area_val,
                     "ogrod_fragment": snippet,
                     "zrodlo": "adresowo",
-                    "data_dodania": super().date_now()
+                    "data_dodania": self.date_now()
                 }
                 offers.append(offer)
                 save_offer_backup(offer, self.src+".csv")     

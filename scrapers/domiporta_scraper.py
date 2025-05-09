@@ -45,7 +45,7 @@ class DomiportaScraper(RealEstateScraper):
                     "powierzchnia": area_val,
                     "ogrod_fragment": snippet,
                     "zrodlo": "domiporta",
-                    "data_dodania": super().date_now()
+                    "data_dodania": self.date_now()
                 })
                 time.sleep(0.5)
             page += 1

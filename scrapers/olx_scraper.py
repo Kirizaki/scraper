@@ -17,13 +17,14 @@ class OlxScraper(RealEstateScraper):
             if not real_page or int(real_page) < page:
                 break
 
-            print(f"\n   [{self.src}] przeszukuje stronę (#{page}): {search_url}")
+            print(f"\n   [{self.src}]\t\t\tprzeszukuje stronę (#{page}): {search_url}")
             soup = BeautifulSoup(res.text, 'html.parser')
             links = {BASE_URL + a['href'].split('?')[0] for a in soup.find_all('a', href=True) if re.match(r"^/d/oferta/[^/]+\.html", a['href'])}
 
             offers = []
             for link in links:
                 try:
+                    self.counter += 1
                     res = requests.get(link, headers={'User-Agent': 'Mozilla/5.0'})
                     soup = BeautifulSoup(res.text, 'html.parser')
                     title = 'brak'
@@ -46,7 +47,7 @@ class OlxScraper(RealEstateScraper):
                             "powierzchnia": area_val,
                             "ogrod_fragment": snippet,
                             "zrodlo": "olx",
-                            "data_dodania": super().date_now()
+                            "data_dodania": self.date_now()
                         }
                         offers.append(offer)
                         save_offer_backup(offer, self.src+".csv")

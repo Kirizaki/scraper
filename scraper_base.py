@@ -6,7 +6,7 @@ from csv_writer import save_offer_backup
 
 class RealEstateScraper(ABC):
     def __init__(self) -> None:
-        super().__init__()
+        self.__init__()
         self.counter = 0
         self.src = '..'
 
@@ -18,18 +18,18 @@ class RealEstateScraper(ABC):
     def date_now(self):
         # Pobranie bieżącej daty i godziny
         now = datetime.now()
-        return now.strftime("%H-%d-%m-%Y")  # Format: godzina-dzień-miesiąc-rok
+        return now.strftime("%H, %d %m %Y")  # Format: godzina, dzień miesiąc rok
 
     def backup(self, offers):
         if not offers:
             return
 
-        print(f"\n   [{offers[0]['zrodlo']}] nowych ofert: {len(offers)}")
+        print(f"\n   [{offers[0]['zrodlo']}]\t\t\tnowych ofert: {len(offers)}")
         for offer in offers:
             save_offer_backup(offer, self.src+".csv")
 
     def log(self):
-        print(f"[{self.src}] sprawdzonych ofert: {self.counter}")
+        print(f"\n   [{self.src}]\t\t\tsprawdzonych ofert: {self.counter}")
 
     def get_page_number(self, url: str) -> int:
         parsed_url = urlparse(url)

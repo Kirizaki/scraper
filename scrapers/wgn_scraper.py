@@ -44,7 +44,7 @@ class WGNScraper(RealEstateScraper):
                     "powierzchnia": area_val,
                     "ogrod_fragment": snippet,
                     "zrodlo": "wgn",
-                    "data_dodania": super().date_now()
+                    "data_dodania": self.date_now()
                 })
 
                 time.sleep(1)

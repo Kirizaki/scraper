@@ -57,7 +57,7 @@ class RynekPierwotnyScraper(RealEstateScraper):
                     "powierzchnia": area,
                     "ogrod_fragment": snippet,
                     "zrodlo": "rynekpierwotny",
-                    "data_dodania": super().date_now()
+                    "data_dodania": self.date_now()
                 })
 
                 time.sleep(0.5)
