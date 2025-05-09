@@ -2,7 +2,7 @@ name: Run Scraper
 
 on:
   schedule:
-    - cron: '0 */2 * * *'  # co 2 godziny
+    - cron: '0 * * * *'  # co godzinę
   workflow_dispatch:
 
 permissions:
@@ -25,8 +25,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # - name: Run scraper
-      #   run: python main.py
+      - name: Run scraper
+        run: python main.py
 
       - name: Generate HTML
         env:
@@ -65,11 +65,15 @@ jobs:
       - name: Check for new offers
         id: check_notify
         run: |
-          FLAG=$(cat notify.flag)
+          if [ -f notify.flag ]; then
+            FLAG=$(cat notify.flag)
+          else
+            FLAG="no"
+          fi
           echo "notify=$FLAG" >> $GITHUB_OUTPUT
 
       - name: Send WhatsApp notify if new offers found
-        if: steps.check_notify.outputs.notify == 'yes'
+        # if: steps.check_notify.outputs.notify == 'yes'
         env:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
@@ -77,13 +81,18 @@ jobs:
           TWILIO_TO_ONE: ${{ secrets.TWILIO_TO_NUMBER_ONE }}
           TWILIO_TO_TWO: ${{ secrets.TWILIO_TO_NUMBER_TWO }}
         run: |
-          curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
-            --data-urlencode "From=whatsapp:$TWILIO_FROM" \
-            --data-urlencode "To=whatsapp:$TWILIO_TO_ONE" \
-            --data-urlencode "Body=📢 Nowe oferty: https://raw.githubusercontent.com/Kirizaki/scraper/main/wyniki.csv" \
-            -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
-          curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
-            --data-urlencode "From=whatsapp:$TWILIO_FROM" \
-            --data-urlencode "To=whatsapp:$TWILIO_TO_TWO" \
-            --data-urlencode "Body=📢 Nowe oferty: https://raw.githubusercontent.com/Kirizaki/scraper/main/wyniki.csv" \
-            -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
+          if [ -f notify.flag ]; then
+            FLAG=$(cat notify.flag)
+          if [ "$FLAG" == "yes" ]; then
+            echo "Nowe oferty znalezione!"
+            curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
+              --data-urlencode "From=whatsapp:$TWILIO_FROM" \
+              --data-urlencode "To=whatsapp:$TWILIO_TO_ONE" \
+              --data-urlencode "Body=📢 Nowe oferty: https://raw.githubusercontent.com/Kirizaki/scraper/main/wyniki.csv" \
+              -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
+            curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
+              --data-urlencode "From=whatsapp:$TWILIO_FROM" \
+              --data-urlencode "To=whatsapp:$TWILIO_TO_TWO" \
+              --data-urlencode "Body=📢 Nowe oferty: https://raw.githubusercontent.com/Kirizaki/scraper/main/wyniki.csv" \
+              -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
+          fi

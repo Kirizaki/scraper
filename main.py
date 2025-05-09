@@ -1,25 +1,52 @@
+from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from csv_writer import init_csv, is_offer_saved, save_offer
+from utils.spinner import Spinner
 from scrapers.otodom_scraper import OtodomScraper
 from scrapers.olx_scraper import OlxScraper
-from csv_writer import init_csv, is_offer_saved, save_offer
-from datetime import datetime
+from scrapers.gratka_scraper import GratkaScraper
+from scrapers.morizon_scraper import MorizonScraper
+from scrapers.adresowo_scraper import AdresowoScraper
+import time
+
+def process_scraper(scraper_cls):
+    scraper = scraper_cls()
+    return scraper.scrape()
 
 def main():
+    start = time.time()
     init_csv()
-    scrapers = [OtodomScraper(), OlxScraper()]
-    
-    for scraper in scrapers:
-        offers = scraper.scrape()
-        new_count = 0
-        for offer in offers:
-            if not is_offer_saved(offer["url"]):
-                offer["data_dodania"] = datetime.now().strftime("%H:%M-%d-%m-%Y")
-                save_offer(offer)
-                print(f"✅ Zapisano nową ofertę: {offer['url']}")
-                new_count += 1
 
-        # Zapisz flagę do pliku – wykorzystywane przez GitHub Actions
-        with open("notify.flag", "w") as f:
-            f.write("yes" if new_count > 0 else "no")
+    # scrapers = [OlxScraper, GratkaScraper, MorizonScraper, AdresowoScraper]
+    scrapers = [MorizonScraper]
+    spinner = Spinner("🔍 Szukam ofert...")
+    spinner.start()
+
+    offers_all = []
+    with ThreadPoolExecutor(max_workers=len(scrapers)) as executor:
+        futures = [executor.submit(process_scraper, scraper_cls) for scraper_cls in scrapers]
+        for future in as_completed(futures):
+            try:
+                offers = future.result()
+                offers_all.extend(offers)
+            except Exception as e:
+                print(f"⚠️ Błąd w jednym ze scraperów: {e}")
+
+    spinner.stop()
+
+    new_count = 0
+    for offer in offers_all:
+        if not is_offer_saved(offer["url"]):
+            offer["data_dodania"] = datetime.now().strftime("%H:%M-%d-%m-%Y")
+            save_offer(offer)
+            print(f"✅ Zapisano nową ofertę: {offer['url']}")
+            new_count += 1
+
+    with open("notify.flag", "w") as f:
+        f.write("yes" if new_count > 0 else "no")
+
+    elapsed = time.time() - start
+    print(f"⏱️ Skrypt wykonał się w {elapsed:.2f} sekund.")
 
 if __name__ == "__main__":
     main()

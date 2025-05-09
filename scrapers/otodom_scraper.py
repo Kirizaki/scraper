@@ -1,9 +1,9 @@
-import requests, time, re
+import requests, time
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, parse_qs
+from csv_writer import save_offer_backup
 from scraper_base import RealEstateScraper
 from utils.garden_utils import has_garden
-from csv_writer import is_offer_saved
 
 BASE_URL = "https://www.otodom.pl"
 
@@ -12,16 +12,15 @@ class OtodomScraper(RealEstateScraper):
         offers = []
         page = 1
         last_real_page = None
+        self.src = 'otodom'
         while True:
-            if page > 1:    ## DEBUG CODE!
-                return offers
-            url = f"{BASE_URL}/pl/wyniki/sprzedaz/mieszkanie/pomorskie/gdansk?viewType=listing&page={page}"
+            url = f"{BASE_URL}/pl/wyniki/sprzedaz/mieszkanie/pomorskie/gdansk?viewType=listing&page={page}&by=LATEST&direction=DESC"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             soup = BeautifulSoup(res.text, "html.parser")
 
             # Wyciągamy numer strony z URL
-            current_page = self.get_page_number_from_url(url)
-            if current_page is None:
+            current_page = self.get_page_number_from_url(res.url)
+            if current_page is None or current_page < page:
                 print("Błąd podczas wyciągania numeru strony!")
                 break
 
@@ -30,17 +29,17 @@ class OtodomScraper(RealEstateScraper):
                 print("Osiągnięto koniec listy ofert.")
                 break
 
+            print(f"\n   [{self.src}] przeszukuje stronę (#{page}): {url}")
             offer_articles = soup.find_all("article", attrs={"data-cy": "listing-item"})
             if not offer_articles:
                 break
 
             for offer in offer_articles:
                 address = offer.find("p", class_="css-1jjm9oe e13d3jhg1") or offer.find("p", class_="css-42r2ms eejmx80")
-                # if not address or "wrzeszcz" not in address.text.lower():
-                #     continue
-
+                if not address or "wrzeszcz" not in address.text.lower():
+                    continue
+                self.counter += 1
                 link = BASE_URL + offer.find("a")['href'].split('?')[0]
-                print(f'Nowa oferta: {link}')
 
                 detail_res = requests.get(link, headers={"User-Agent": "Mozilla/5.0"})
                 detail_soup = BeautifulSoup(detail_res.text, "html.parser")
@@ -49,23 +48,27 @@ class OtodomScraper(RealEstateScraper):
                 if not garden:
                     continue
 
-                price = detail_soup.find("strong", {"data-testid": "ad-price"})
-                area = detail_soup.find("div", string=re.compile("Powierzchnia"))
-                area_val = area.find_next("div").text.strip() if area else "Brak"
+                title = detail_soup.find("h1").text.strip()
+                price = detail_soup.find("strong", class_="css-1o51x5a e1k1vyr21").contents[0].text.strip()
+                area_val = detail_soup.find_all("p", class_="esen0m92 css-1airkmu")[1].text.strip
 
-                offers.append({
+                offer = {
                     "url": link,
+                    "tytul": title,
                     "dzielnica": address.text.strip(),
-                    "cena": price.text.strip() if price else "Brak",
+                    "cena": price,
                     "powierzchnia": area_val,
                     "ogrod_fragment": snippet,
-                    "zrodlo": "otodom",
+                    "zrodlo": self.src,
                     "data_dodania": super().date_now()
-                })
+                }
+                offers.append(offer)
+                save_offer_backup(offer, self.src+".csv")
 
                 time.sleep(0.5)
             page += 1
             time.sleep(1)
+        self.log()
         return offers
 
     def get_page_number_from_url(self, url):
