@@ -9,14 +9,14 @@ CSV_FILE = 'wyniki.csv'
 csv_lock = threading.Lock()
 
 def init_csv():
-    if not os.path.exists("2"+CSV_FILE):
-        with open("2"+CSV_FILE, 'w', newline='', encoding='utf-8') as f:
+    if not os.path.exists(CSV_FILE):
+        with open(CSV_FILE, 'w', newline='', encoding='utf-8') as f:
             writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
             writer.writeheader()
 
 def save_offer(offer: dict):
     with csv_lock:  # Blokujemy dostęp do zapisu w pliku CSV
-        with open("2"+CSV_FILE, 'a', newline='', encoding='utf-8') as f:
+        with open(CSV_FILE, 'a', newline='', encoding='utf-8') as f:
             writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
             writer.writerow(offer)
 
@@ -29,8 +29,8 @@ def save_offer_backup(offer: dict, filename: str):
             writer.writerow(offer)
 
 def is_offer_saved(url: str) -> bool:
-    if not os.path.exists("2"+CSV_FILE):
+    if not os.path.exists(CSV_FILE):
         return False
-    with open("2"+CSV_FILE, 'r', newline='', encoding='utf-8') as f:
+    with open(CSV_FILE, 'r', newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         return any(row["url"] == url for row in reader)
