@@ -26,16 +26,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run scraper
-        env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # git config --global user.name 'github-actions'
-          # git config --global user.email 'actions@github.com'
-
-          python main.py
-          git add *.csv
-          git commit -m "backup results"
-          git push https://x-access-token:${TOKEN}@github.com/${{ github.repository }} HEAD:backups
+        run: python main.py
 
       - name: Generate HTML
         env:
@@ -64,8 +55,7 @@ jobs:
           # git pull --rebase origin main
 
           # Dodaj pliki CSV oraz flagę (jeśli istnieją)
-          if [ -f "wyniki.csv" ]; then git add wyniki.csv; fi
-          if [ -f "prev_oferty.csv" ]; then git add prev_oferty.csv; fi
+          git add *.csv
           if [ -f "notify.flag" ]; then git add notify.flag; fi
 
           # Zrób commit, jeśli coś zostało dodane
