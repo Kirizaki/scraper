@@ -17,7 +17,7 @@ class MorizonScraper(RealEstateScraper):
             real_page = self.get_page_number(res.url)
             if not real_page or int(real_page) < page:
                 break
-            print(f"\n   [{self.src}]\t\t\tprzeszukuje stronę (#{page}): {url}")
+            print(f"\n   [{self.src}] przeszukuje stronę (#{page}): {url}")
             soup = BeautifulSoup(res.text, "html.parser")
 
             offer_articles = soup.find_all("a", class_="RGqjO2 undefined")

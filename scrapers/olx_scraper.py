@@ -17,7 +17,7 @@ class OlxScraper(RealEstateScraper):
             if not real_page or int(real_page) < page:
                 break
 
-            print(f"\n   [{self.src}]\t\t\tprzeszukuje stronę (#{page}): {search_url}")
+            print(f"\n   [{self.src}] przeszukuje stronę (#{page}): {search_url}")
             soup = BeautifulSoup(res.text, 'html.parser')
             links = {BASE_URL + a['href'].split('?')[0] for a in soup.find_all('a', href=True) if re.match(r"^/d/oferta/[^/]+\.html", a['href'])}
 

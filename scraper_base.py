@@ -23,12 +23,12 @@ class RealEstateScraper(ABC):
         if not offers:
             return
 
-        print(f"\n   [{offers[0]['zrodlo']}]\t\t\tnowych ofert: {len(offers)}")
+        print(f"\n   [{offers[0]['zrodlo']}] nowych ofert: {len(offers)}")
         for offer in offers:
             save_offer_backup(offer, self.src+".csv")
 
     def log(self):
-        print(f"\n   [{self.src}]\t\t\tsprawdzonych ofert: {self.counter}")
+        print(f"\n   [{self.src}] sprawdzonych ofert: {self.counter}")
 
     def get_page_number(self, url: str) -> int:
         parsed_url = urlparse(url)

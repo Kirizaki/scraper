@@ -29,7 +29,7 @@ class OtodomScraper(RealEstateScraper):
                 print("Osiągnięto koniec listy ofert.")
                 break
 
-            print(f"\n   [{self.src}]\t\t\tprzeszukuje stronę (#{page}): {url}")
+            print(f"\n   [{self.src}] przeszukuje stronę (#{page}): {url}")
             offer_articles = soup.find_all("article", attrs={"data-cy": "listing-item"})
             if not offer_articles:
                 break

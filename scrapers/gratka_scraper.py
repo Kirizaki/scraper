@@ -19,7 +19,7 @@ class GratkaScraper(RealEstateScraper):
 
             if current_page is None or current_page < page:
                 break
-            print(f"\n   [{self.src}]\t\t\tprzeszukuje stronę (#{page}): {url}")
+            print(f"\n   [{self.src}] przeszukuje stronę (#{page}): {url}")
 
             offer_articles = soup.find_all("a", class_="RGqjO2 undefined")
             if not offer_articles:
