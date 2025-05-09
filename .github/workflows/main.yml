@@ -88,11 +88,11 @@ jobs:
             curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
               --data-urlencode "From=whatsapp:$TWILIO_FROM" \
               --data-urlencode "To=whatsapp:$TWILIO_TO_ONE" \
-              --data-urlencode "Body=📢 Nowe oferty: https://raw.githubusercontent.com/Kirizaki/scraper/main/wyniki.csv" \
+              --data-urlencode "Body=📢 Nowe oferty: https://kirizaki.github.io/scraper/wyniki.html" \
               -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
             curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
               --data-urlencode "From=whatsapp:$TWILIO_FROM" \
               --data-urlencode "To=whatsapp:$TWILIO_TO_TWO" \
-              --data-urlencode "Body=📢 Nowe oferty: https://raw.githubusercontent.com/Kirizaki/scraper/main/wyniki.csv" \
+              --data-urlencode "Body=📢 Nowe oferty: https://kirizaki.github.io/scraper/wyniki.html" \
               -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
           fi
