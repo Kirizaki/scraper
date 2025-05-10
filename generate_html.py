@@ -10,6 +10,22 @@ def generate_html(csv_file, html_file):
         reader = csv.DictReader(f)
         rows = list(reader)
 
+    DATA_FIELD = 'data_dodania'
+
+    def parse_date(value):
+        match = re.match(r'^(\d{1,2})(?::(\d{2}))?-(\d{2})-(\d{2})-(\d{4})$', value)
+        if match:
+            hour = int(match.group(1))
+            minute = int(match.group(2) or 0)
+            day = int(match.group(3))
+            month = int(match.group(4))
+            year = int(match.group(5))
+            return datetime(year, month, day, hour, minute)
+        return datetime.min
+
+    rows.sort(key=lambda row: parse_date(row.get(DATA_FIELD, '')), reverse=True)
+
+
     with open(html_file, 'w', encoding='utf-8') as f:
         f.write("""
 <!DOCTYPE html>
