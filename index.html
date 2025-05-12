@@ -37,6 +37,7 @@
 <script>
 const tableBody = document.getElementById('table-body');
 
+// TODO: Change to the real timestamp of the new offers arrival!
 fetch('/get-data')
   .then(res => res.json())
   .then(data => {
