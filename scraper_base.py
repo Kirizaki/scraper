@@ -4,6 +4,20 @@ from urllib.parse import urlparse, parse_qs
 
 from csv_writer import save_offer_backup
 
+# TODO:
+# 1. Filtrować po pietrze, czyli PARTER!
+# 2. Odpadają ulice:
+#   al. gen. Józefa Hallera
+#   Tadeusza Kościuszki
+#   Sochaczewska
+#   Żywiecka
+#   Legionów
+  
+# 3. Powierzchnia 55m2 - 120m2
+# 4. Max za 1m2: 16.000
+# 5. Sprawdzic duplikaty jeszcze raz:
+# https://www.otodom.pl/hpr/pl/oferta/ogrod-miejsce-naziemne-pracownia-kancelaria-ID4tO7D
+# 6. 
 class RealEstateScraper(ABC):
     def __init__(self) -> None:
         self.counter = 0

@@ -57,7 +57,9 @@ class OtioScraper(RealEstateScraper):
                     "powierzchnia": area,
                     "ogrod_fragment": snippet,
                     "zrodlo": "otio",
-                    "data_dodania": self.date_now()
+                    "data_dodania": self.date_now(),
+                    "fav": '0',
+                    "hide": '0'
                 })
 
                 time.sleep(0.5)

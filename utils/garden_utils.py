@@ -1,6 +1,7 @@
 import re
 
 def has_garden(text: str, keywords=None):
+    ## POPRAWIĆ PRZESZUKIWANIE BODY TXT BO SZUKA W REKLAMACH!
     if keywords is None:
         keywords = ["ogród", "ogródek", "z ogrodem", "dostęp do ogrodu"]
     

@@ -56,8 +56,8 @@ class EstateCloudScraper(RealEstateScraper):
                     "cena": price,
                     "powierzchnia": area,
                     "ogrod_fragment": snippet,
-                    "zrodlo": "estatecloud",
-                    "data_dodania": self.date_now()
+                    "fav": '0',
+                    "hide": '0'
                 })
 
                 time.sleep(0.5)

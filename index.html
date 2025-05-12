@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Oferty mieszkań</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 8px; border: 1px solid #ccc; text-align: left; }
+    th { cursor: pointer; background: #f0f0f0; }
+    .italic {
+        font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Oferty mieszkań — ostatnia aktualizacja: <span id="update-date">...</span></h2>
+<table id="offers">
+  <thead>
+    <tr>
+      <th onclick="sortTable(0)">Nr</th>
+      <th>URL</th>
+      <th>Tytuł</th>
+      <th>Dzielnica</th>
+      <th onclick="sortTable(4)">Cena</th>
+      <th onclick="sortTable(5)">Powierzchnia</th>
+      <th>Ogród</th>
+      <th onclick="sortTable(7)">Źródło</th>
+      <th onclick="sortTable(8)">Data Dodania</th>
+      <th onclick="sortTable(9)">Ulubione</th>
+      <th>Ukryj</th>
+    </tr>
+  </thead>
+  <tbody id="table-body"></tbody>
+</table>
+
+<script>
+const tableBody = document.getElementById('table-body');
+
+fetch('/get-data')
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("update-date").textContent = new Date().toLocaleString("pl-PL");
+    renderTable(data);
+  });
+
+function renderTable(data) {
+  tableBody.innerHTML = '';
+
+  data.forEach((row, index) => {
+    if (row.hide === '1') return;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${index + 1}</td>
+      <td><a href="${row.url}" target="_blank">link</a></td>
+      <td>${row.tytul}</td>
+      <td>${row.dzielnica}</td>
+      <td>${parsePrice(row.cena)}</td>
+      <td>${parseFloat(row.powierzchnia) || ''}</td>
+      <td class="italic">${row.ogrod_fragment}</td>
+      <td>${row.zrodlo}</td>
+      <td>${row.data_dodania}</td>
+      <td style="text-align:center; cursor:pointer" onclick="toggleFav('${row.url}', this)">
+        ${row.fav === '1' ? '❤️' : '🤍'}
+      </td>
+      <td style="text-align:center; cursor:pointer" onclick="toggleHide('${row.url}')">➖</td>
+    `;
+    tableBody.appendChild(tr);
+  });
+}
+
+function parsePrice(priceStr) {
+  return parseInt(priceStr.replace(/\D/g, '')) || '';
+}
+
+function toggleFav(url, cell) {
+  // sprawdzamy, czy w komórce jest już serce, jeśli tak, to zmieniamy stan
+  const currentFav = cell.getAttribute('data-fav') || '0'; // domyślnie '0', jeśli brak atrybutu
+  const newFav = currentFav === '1' ? '0' : '1'; // zmieniamy stan z 0 na 1 lub z 1 na 0
+
+  // Zmieniamy tekst w komórce
+  cell.textContent = newFav === '1' ? '❤️' : '🤍';
+
+  // Ustawiamy atrybut 'data-fav', by zapisać aktualny stan w DOM
+  cell.setAttribute('data-fav', newFav);
+
+  // Wysłanie zmienionego stanu na serwer
+  fetch('/update-fav', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ url, fav: newFav })
+  }).then(response => {
+    if (response.ok) {
+      console.log(`Stan 'ulubionego' dla ${url} został zaktualizowany.`);
+    } else {
+      console.error("Błąd podczas aktualizacji stanu 'ulubionego'.");
+    }
+  });
+}
+
+
+function toggleHide(url) {
+  fetch('/update-hide', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ url })
+  }).then(() => {
+    location.reload(); // reload po ukryciu
+  });
+}
+
+function formatDate(dateStr) {
+  const [time, day, month, year] = dateStr.split('-');
+  if (!time || !day || !month || !year) return new Date(0);
+  const [h, m] = time.split(':');
+  return new Date(`${year}-${month}-${day}T${h}:${m}:00`);
+}
+
+let ascending = true;
+function sortTable(n) {
+  const rows = Array.from(tableBody.querySelectorAll("tr"));
+  rows.sort((a, b) => {
+    var cellA = a.children[n].textContent.trim();
+    var cellB = b.children[n].textContent.trim();
+
+    if (n === 0 || n === 4 || n === 5 || n === 9) {
+      if (n === 9)
+      {
+        if (!cellA.includes('🤍'))
+        cellA = '0';
+        else
+        cellA = '1';
+        if (!cellB.includes('🤍'))
+        cellB = '0';
+        else
+        cellB = '1';
+      }
+      return ascending ? Number(cellA) - Number(cellB) : Number(cellB) - Number(cellA);
+    }
+
+    if (n === 8) {
+      return ascending ? formatDate(cellA) - formatDate(cellB) : formatDate(cellB) - formatDate(cellA);
+    }
+
+    return ascending
+      ? cellA.localeCompare(cellB)
+      : cellB.localeCompare(cellA);
+  });
+
+  ascending = !ascending;
+  rows.forEach(row => tableBody.appendChild(row));
+}
+</script>
+
+</body>
+</html>

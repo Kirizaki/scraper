@@ -50,7 +50,7 @@ class OtodomScraper(RealEstateScraper):
 
                 title = detail_soup.find("h1").text.strip()
                 price = detail_soup.find("strong", class_="css-1o51x5a e1k1vyr21").contents[0].text.strip()
-                area_val = detail_soup.find_all("p", class_="esen0m92 css-1airkmu")[1].text.strip
+                area_val = detail_soup.find_all("p", class_="esen0m92 css-1airkmu")[1].text.strip()
 
                 offer = {
                     "url": link,
@@ -60,7 +60,9 @@ class OtodomScraper(RealEstateScraper):
                     "powierzchnia": area_val,
                     "ogrod_fragment": snippet,
                     "zrodlo": self.src,
-                    "data_dodania": self.date_now()
+                    "data_dodania": self.date_now(),
+                    "fav": '0',
+                    "hide": '0'
                 }
                 offers.append(offer)
                 save_offer_backup(offer, self.src+".csv")

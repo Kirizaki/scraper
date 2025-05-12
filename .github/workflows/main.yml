@@ -1,90 +1,90 @@
-name: Run Scraper
+# name: Run Scraper
 
-on:
-  schedule:
-    - cron: '0 * * * *'  # co godzinę
-  workflow_dispatch:
+# on:
+#   schedule:
+#     - cron: '0 * * * *'  # co godzinę
+#   workflow_dispatch:
 
-permissions:
-  contents: write
+# permissions:
+#   contents: write
 
-jobs:
-  run-scraper:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+# jobs:
+#   run-scraper:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
+#       - name: Set up Python
+#         uses: actions/setup-python@v2
+#         with:
+#           python-version: '3.x'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+#       - name: Install dependencies
+#         run: |
+#           python -m pip install --upgrade pip
+#           pip install -r requirements.txt
 
-      - name: Run scraper
-        run: python main.py
+#       - name: Run scraper
+#         run: python main.py
 
-      - name: Generate HTML
-        env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python generate_html.py
+#       - name: Generate HTML
+#         env:
+#           TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         run: |
+#           python generate_html.py
 
-          # git pull --rebase
-          # if [ -f "wyniki.html" ]; then git add wyniki.html; fi
-          # git commit -m "Update HTML" || echo "No changes to commit"
-          # git push https://x-access-token:${TOKEN}@github.com/${{ github.repository }} HEAD:gh-pages
+#           # git pull --rebase
+#           # if [ -f "wyniki.html" ]; then git add wyniki.html; fi
+#           # git commit -m "Update HTML" || echo "No changes to commit"
+#           # git push https://x-access-token:${TOKEN}@github.com/${{ github.repository }} HEAD:gh-pages
 
-      - name: Commit CSV
-        env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'actions@github.com'
+#       - name: Commit CSV
+#         env:
+#           TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         run: |
+#           git config --global user.name 'github-actions'
+#           git config --global user.email 'actions@github.com'
 
-          # # Pobierz najnowsze zmiany z repozytorium
-          # git fetch origin main
-          # git checkout main
-          # git pull --rebase origin main
+#           # # Pobierz najnowsze zmiany z repozytorium
+#           # git fetch origin main
+#           # git checkout main
+#           # git pull --rebase origin main
 
-          # Dodaj pliki CSV oraz flagę (jeśli istnieją)
-          git add *.csv
-          if [ -f "notify.flag" ]; then git add notify.flag; fi
+#           # Dodaj pliki CSV oraz flagę (jeśli istnieją)
+#           git add *.csv
+#           if [ -f "notify.flag" ]; then git add notify.flag; fi
 
-          # Zrób commit, jeśli coś zostało dodane
-          git commit -m "Update CSV" || echo "No changes to commit"
+#           # Zrób commit, jeśli coś zostało dodane
+#           git commit -m "Update CSV" || echo "No changes to commit"
 
-          # Pushuj zmiany przy użyciu tokena
-          git push https://x-access-token:${TOKEN}@github.com/${{ github.repository }} HEAD:main
+#           # Pushuj zmiany przy użyciu tokena
+#           git push https://x-access-token:${TOKEN}@github.com/${{ github.repository }} HEAD:main
 
-      - name: Check for new offers
-        id: check_notify
-        run: |
-          if [ -f notify.flag ]; then
-            echo "notify=yes" >> $GITHUB_OUTPUT
-          else
-            echo "notify=no" >> $GITHUB_OUTPUT
-          fi
+#       - name: Check for new offers
+#         id: check_notify
+#         run: |
+#           if [ -f notify.flag ]; then
+#             echo "notify=yes" >> $GITHUB_OUTPUT
+#           else
+#             echo "notify=no" >> $GITHUB_OUTPUT
+#           fi
 
-      - name: Send WhatsApp notify if new offers found
-        if: steps.check_notify.outputs.notify == 'yes'
-        env:
-          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
-          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
-          TWILIO_FROM: ${{ secrets.TWILIO_FROM_NUMBER }}
-          TWILIO_TO_ONE: ${{ secrets.TWILIO_TO_NUMBER_ONE }}
-          TWILIO_TO_TWO: ${{ secrets.TWILIO_TO_NUMBER_TWO }}
-        run: |
-          echo "📢 Nowe oferty znalezione, wysyłam powiadomienia..."
+#       - name: Send WhatsApp notify if new offers found
+#         if: steps.check_notify.outputs.notify == 'yes'
+#         env:
+#           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+#           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+#           TWILIO_FROM: ${{ secrets.TWILIO_FROM_NUMBER }}
+#           TWILIO_TO_ONE: ${{ secrets.TWILIO_TO_NUMBER_ONE }}
+#           TWILIO_TO_TWO: ${{ secrets.TWILIO_TO_NUMBER_TWO }}
+#         run: |
+#           echo "📢 Nowe oferty znalezione, wysyłam powiadomienia..."
 
-          for TO in "$TWILIO_TO_ONE" "$TWILIO_TO_TWO"; do
-            curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
-              --data-urlencode "From=whatsapp:$TWILIO_FROM" \
-              --data-urlencode "To=whatsapp:$TO" \
-              --data-urlencode "Body=📢 Nowe oferty: https://kirizaki.github.io/scraper/wyniki.html" \
-              -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
-          done
+#           for TO in "$TWILIO_TO_ONE" "$TWILIO_TO_TWO"; do
+#             curl -X POST https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json \
+#               --data-urlencode "From=whatsapp:$TWILIO_FROM" \
+#               --data-urlencode "To=whatsapp:$TO" \
+#               --data-urlencode "Body=📢 Nowe oferty: https://kirizaki.github.io/scraper/wyniki.html" \
+#               -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN"
+#           done

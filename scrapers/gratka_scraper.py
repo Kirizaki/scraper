@@ -47,7 +47,9 @@ class GratkaScraper(RealEstateScraper):
                     "powierzchnia": area_val,
                     "ogrod_fragment": snippet,
                     "zrodlo": self.src,
-                    "data_dodania": self.date_now()
+                    "data_dodania": self.date_now(),
+                    "fav": '0',
+                    "hide": '0'
                 }
                 offers.append(offer)
                 save_offer_backup(offer, self.src+".csv")

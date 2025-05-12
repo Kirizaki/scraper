@@ -1,6 +1,6 @@
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from csv_writer import init_csv, is_offer_saved, save_offer
+from csv_writer import init_csv, is_offer_saved, remove_duplicates, save_offer
 from scrapers.otodom_scraper import OtodomScraper
 from scrapers.olx_scraper import OlxScraper
 from scrapers.gratka_scraper import GratkaScraper
@@ -39,6 +39,7 @@ def main():
     if new_count > 0:
         with open('notify.flag', 'w') as f:
             f.write('yes')
+            remove_duplicates()
     else:
         import os
         if os.path.exists('notify.flag'):
