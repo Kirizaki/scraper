@@ -1,6 +1,7 @@
 import csv
 import os
 import threading
+import shutil
 from datetime import datetime
 
 FIELDNAMES = ["url", "tytul", "cena", "powierzchnia", "na_metr", "zrodlo", "data_dodania", "fav", "hide"]
