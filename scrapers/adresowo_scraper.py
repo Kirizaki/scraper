@@ -51,10 +51,9 @@ class AdresowoScraper(RealEstateScraper):
                 offer = {
                     "url": link,
                     "tytul": title,
-                    "dzielnica": "Wrzeszcz",
                     "cena": price,
                     "powierzchnia": area_val,
-                    "ogrod_fragment": snippet,
+                    "na_metr": price_on_meter,
                     "zrodlo": self.src,
                     "data_dodania": self.date_now(),
                     "fav": '0',

@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse, parse_qs
 from csv_writer import save_offer_backup
 from scraper_base import RealEstateScraper
-from utils.garden_utils import has_garden
 
 BASE_URL = "https://www.otodom.pl"
 
@@ -38,27 +37,42 @@ class OtodomScraper(RealEstateScraper):
                 address = offer.find("p", class_="css-1jjm9oe e13d3jhg1") or offer.find("p", class_="css-42r2ms eejmx80")
                 if not address or "wrzeszcz" not in address.text.lower():
                     continue
+
+                street_text = offer.find('p', class_="css-42r2ms eejmx80").text
+                if self.has_street(street_text) and not self.proper_street(street_text):
+                    continue
+
                 self.counter += 1
                 link = BASE_URL + offer.find("a")['href'].split('?')[0]
 
                 detail_res = requests.get(link, headers={"User-Agent": "Mozilla/5.0"})
                 detail_soup = BeautifulSoup(detail_res.text, "html.parser")
-                body_text = detail_soup.get_text(separator=' ', strip=True)
-                garden, snippet = has_garden(body_text)
-                if not garden:
+                details = detail_soup.find_all("span", class_="css-axw7ok esen0m94")
+                if not self.has_garden_in_additional_info(details):
                     continue
 
                 title = detail_soup.find("h1").text.strip()
                 price = detail_soup.find("strong", class_="css-1o51x5a e1k1vyr21").contents[0].text.strip()
-                area_val = detail_soup.find_all("p", class_="esen0m92 css-1airkmu")[1].text.strip()
+
+                area_val = self.extract_surface(offer.find('dl', class_="css-9q2yy4 eyjpr0t1").text)
+                if area_val and (area_val < self.min_area or area_val > self.max_area):
+                    continue
+
+                floor = self.extract_floor(offer.find('dl', class_="css-9q2yy4 eyjpr0t1").text)
+                if floor > self.parter:
+                    continue
+
+                price = self.extract_price(detail_soup.find('strong', class_="css-1o51x5a e1k1vyr21").text)
+                price_on_meter = self.extract_price(detail_soup.find('div', class_="css-z3xj2a e1k1vyr25").text)
+                if price_on_meter and price_on_meter > self.max_on_meter:
+                    continue
 
                 offer = {
                     "url": link,
                     "tytul": title,
-                    "dzielnica": address.text.strip(),
                     "cena": price,
                     "powierzchnia": area_val,
-                    "ogrod_fragment": snippet,
+                    "na_metr": price_on_meter,
                     "zrodlo": self.src,
                     "data_dodania": self.date_now(),
                     "fav": '0',
@@ -72,6 +86,19 @@ class OtodomScraper(RealEstateScraper):
             time.sleep(1)
         self.log()
         return offers
+
+    def has_garden_in_additional_info(self, informacje_dodatkowe):
+        for info in informacje_dodatkowe:
+            for word in self.keywords:
+                return word in info.text
+
+        return False
+
+    def has_garden_in_desc(self, opis):
+        for word in self.keywords:
+            return word in opis
+
+        return False
 
     def get_page_number_from_url(self, url):
         """Zwraca numer strony wyciągnięty z URL"""

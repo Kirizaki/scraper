@@ -21,13 +21,12 @@
       <th onclick="sortTable(0)">Nr</th>
       <th>URL</th>
       <th>Tytuł</th>
-      <th>Dzielnica</th>
-      <th onclick="sortTable(4)">Cena</th>
-      <th onclick="sortTable(5)">Powierzchnia</th>
-      <th>Ogród</th>
-      <th onclick="sortTable(7)">Źródło</th>
-      <th onclick="sortTable(8)">Data Dodania</th>
-      <th onclick="sortTable(9)">Ulubione</th>
+      <th onclick="sortTable(3)">Cena [zł]</th>
+      <th onclick="sortTable(4)">Powierzchnia [m²]</th>
+      <th onclick="sortTable(5)">Cena za metr [zł/m²]</th>
+      <th onclick="sortTable(6)">Źródło</th>
+      <th onclick="sortTable(7)">Data Dodania</th>
+      <th onclick="sortTable(8)">Ulubione</th>
       <th>Ukryj</th>
     </tr>
   </thead>
@@ -50,34 +49,35 @@ function renderTable(data) {
 
   data.forEach((row, index) => {
     if (row.hide === '1') return;
-
+    ["url", "tytul", "cena", "powierzchnia", "na_metr", "zrodlo", "data_dodania", "fav", "hide"]
+    
+    console.log(row);
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${index + 1}</td>
       <td><a href="${row.url}" target="_blank">link</a></td>
-      <td>${row.tytul}</td>
-      <td>${row.dzielnica}</td>
-      <td>${parsePrice(row.cena)}</td>
+      <td><b>${row.tytul}</b></td>
+      <td>${row.cena}</td>
       <td>${parseFloat(row.powierzchnia) || ''}</td>
-      <td class="italic">${row.ogrod_fragment}</td>
+      <td>${parseFloat(row.na_metr) || ''}</td>
       <td>${row.zrodlo}</td>
       <td>${row.data_dodania}</td>
-      <td style="text-align:center; cursor:pointer" onclick="toggleFav('${row.url}', this)">
+      <td style="text-align:center; cursor:pointer"
+        data-fav="${row.fav}"
+        onclick="toggleFav('${row.url}', this)">
         ${row.fav === '1' ? '❤️' : '🤍'}
       </td>
+
       <td style="text-align:center; cursor:pointer" onclick="toggleHide('${row.url}')">➖</td>
     `;
     tableBody.appendChild(tr);
   });
 }
 
-function parsePrice(priceStr) {
-  return parseInt(priceStr.replace(/\D/g, '')) || '';
-}
-
 function toggleFav(url, cell) {
   // sprawdzamy, czy w komórce jest już serce, jeśli tak, to zmieniamy stan
   const currentFav = cell.getAttribute('data-fav') || '0'; // domyślnie '0', jeśli brak atrybutu
+  console.log(currentFav);
   const newFav = currentFav === '1' ? '0' : '1'; // zmieniamy stan z 0 na 1 lub z 1 na 0
 
   // Zmieniamy tekst w komórce
@@ -107,7 +107,7 @@ function toggleHide(url) {
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({ url })
   }).then(() => {
-    location.reload(); // reload po ukryciu
+    location.reload();
   });
 }
 
@@ -125,8 +125,8 @@ function sortTable(n) {
     var cellA = a.children[n].textContent.trim();
     var cellB = b.children[n].textContent.trim();
 
-    if (n === 0 || n === 4 || n === 5 || n === 9) {
-      if (n === 9)
+    if (n === 0 || n === 3 || n === 4 || n === 5 || n === 8) {
+      if (n === 8)
       {
         if (!cellA.includes('🤍'))
         cellA = '0';
@@ -140,7 +140,7 @@ function sortTable(n) {
       return ascending ? Number(cellA) - Number(cellB) : Number(cellB) - Number(cellA);
     }
 
-    if (n === 8) {
+    if (n === 7) {
       return ascending ? formatDate(cellA) - formatDate(cellB) : formatDate(cellB) - formatDate(cellA);
     }
 

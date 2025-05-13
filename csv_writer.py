@@ -2,7 +2,7 @@ import csv
 import os
 import threading
 
-FIELDNAMES = ['url', 'tytul', 'dzielnica', 'cena', 'powierzchnia', 'ogrod_fragment', 'zrodlo', 'data_dodania','fav', 'hide']
+FIELDNAMES = ["url", "tytul", "cena", "powierzchnia", "na_metr", "zrodlo", "data_dodania", "fav", "hide"]
 CSV_FILE = 'wyniki.csv'
 
 # Blokada, aby synchronizować dostęp do pliku CSV

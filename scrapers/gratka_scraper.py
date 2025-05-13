@@ -40,12 +40,11 @@ class GratkaScraper(RealEstateScraper):
                 area_val = detail_soup.find("div", class_="property-info").contents[0].contents[0]
 
                 offer = {
-                   "url": link,
+                    "url": link,
                     "tytul": title,
-                    "dzielnica": "Wrzeszcz",  # Gratka ma gorsze dzielenie na dzielnice
                     "cena": price,
                     "powierzchnia": area_val,
-                    "ogrod_fragment": snippet,
+                    "na_metr": price_on_meter,
                     "zrodlo": self.src,
                     "data_dodania": self.date_now(),
                     "fav": '0',

@@ -1,13 +1,12 @@
 from flask import Flask, jsonify, request, send_from_directory
 import csv
-import os
 
 app = Flask(__name__)
 
 CSV_FILE = 'wyniki.csv'
 FIELDS = [
-    "url", "tytul", "dzielnica", "cena", "powierzchnia",
-    "ogrod_fragment", "zrodlo", "data_dodania", "fav", "hide"
+    "url", "tytul", "cena", "powierzchnia", "na_metr",
+    "zrodlo", "data_dodania", "fav", "hide"
 ]
 
 @app.route('/')
