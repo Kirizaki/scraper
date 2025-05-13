@@ -55,7 +55,6 @@ function renderTable(data) {
     if (row.hide === '1') return;
     ["url", "tytul", "cena", "powierzchnia", "na_metr", "zrodlo", "data_dodania", "fav", "hide"]
     
-    console.log(row);
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${index + 1}</td>
@@ -81,7 +80,6 @@ function renderTable(data) {
 function toggleFav(url, cell) {
   // sprawdzamy, czy w komórce jest już serce, jeśli tak, to zmieniamy stan
   const currentFav = cell.getAttribute('data-fav') || '0'; // domyślnie '0', jeśli brak atrybutu
-  console.log(currentFav);
   const newFav = currentFav === '1' ? '0' : '1'; // zmieniamy stan z 0 na 1 lub z 1 na 0
 
   // Zmieniamy tekst w komórce
