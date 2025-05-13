@@ -4,7 +4,7 @@ from twilio.rest import Client
 import smtplib
 from email.mime.text import MIMEText
 
-link = "http://13.48.13.46/"  # ← zamień na swój URL
+link = "http://13.48.13.46/"
 body = f"""\
 <html>
     <body>
@@ -30,9 +30,8 @@ def send_email_notification():
     msg["From"] = smtp_user
     msg["To"] = recipient
 
-    # Poprawne połączenie z TLS
     with smtplib.SMTP(smtp_server, smtp_port) as server:
-        server.ehlo()  # niektóre serwery wymagają jawnego EHLO
+        server.ehlo()
         server.starttls()
         server.ehlo()
         server.login(smtp_user, smtp_password)
@@ -43,8 +42,8 @@ def send_email_notification():
 def send_whatsapp_notification():
     account_sid = os.getenv('TWILIO_SID')
     auth_token = os.getenv('TWILIO_AUTH_TOKEN')
-    from_whatsapp = os.getenv('TWILIO_WHATSAPP_FROM')  # np. 'whatsapp:+14155238886'
-    to_whatsapp = os.getenv('TWILIO_WHATSAPP_TO')      # np. 'whatsapp:+48xxxxxxxxx'
+    from_whatsapp = os.getenv('TWILIO_WHATSAPP_FROM')
+    to_whatsapp = os.getenv('TWILIO_WHATSAPP_TO')
 
     client = Client(account_sid, auth_token)
     message = client.messages.create(
@@ -59,7 +58,7 @@ def main():
     if Path('notify.flag').exists():
         send_email_notification()
         send_whatsapp_notification()
-        Path('notify.flag').unlink()  # usunięcie flagi po powiadomieniu
+        Path('notify.flag').unlink()
     else:
         print("Brak nowych ofert.")
 
