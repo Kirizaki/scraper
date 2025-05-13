@@ -23,8 +23,7 @@ def main():
     print(f"Cron: {'✅ działa' if check_process('cron') else '❌ nie działa'}")
     print(f"Backend: {'✅ działa' if check_port(5555) else '❌ nie działa'}")
     print(f"Frontend:")
-    for port in [3000, 80]:
-        print(f"  - Port {port}: {'✅ otwarty' if check_port(port) else '❌ zamknięty'}")
+    print(f"  - Port {80}: {'✅ otwarty' if check_port(80) else '❌ zamknięty'}")
 
 if __name__ == "__main__":
     main()
