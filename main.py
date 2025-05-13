@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from csv_writer import init_csv, is_offer_saved, remove_duplicates, save_offer
@@ -42,7 +43,6 @@ def main():
             f.write('yes')
             remove_duplicates()
     else:
-        import os
         if os.path.exists('notify.flag'):
             os.remove('notify.flag') 
 
@@ -50,4 +50,6 @@ def main():
     print(f"⏱️ Skrypt wykonał się w {elapsed:.2f} sekund.")
 
 if __name__ == "__main__":
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(script_dir)
     main()
