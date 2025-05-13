@@ -21,8 +21,8 @@ def main():
 
     print(f"Scraper (main.py): {'✅ działa' if check_process('main.py') else '❌ nie działa'}")
     print(f"Cron: {'✅ działa' if check_process('cron') else '❌ nie działa'}")
-    print(f"Backend (np. FastAPI na porcie 8000): {'✅ działa' if check_port(8000) else '❌ nie działa'}")
-    print(f"Frontend (np. na porcie 3000 lub 80):")
+    print(f"Backend: {'✅ działa' if check_port(5555) else '❌ nie działa'}")
+    print(f"Frontend:")
     for port in [3000, 80]:
         print(f"  - Port {port}: {'✅ otwarty' if check_port(port) else '❌ zamknięty'}")
 
