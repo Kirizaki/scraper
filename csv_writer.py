@@ -1,9 +1,11 @@
 import csv
 import os
 import threading
+from datetime import datetime
 
 FIELDNAMES = ["url", "tytul", "cena", "powierzchnia", "na_metr", "zrodlo", "data_dodania", "fav", "hide"]
 CSV_FILE = 'wyniki.csv'
+BACKUP_DIR = "backup"
 
 # Blokada, aby synchronizować dostęp do pliku CSV
 csv_lock = threading.Lock()
@@ -54,4 +56,17 @@ def remove_duplicates():
             writer.writerow(header)
             writer.writerows(unique_rows)
 
-remove_duplicates()
+def backup_csv():
+    with csv_lock:
+        if not os.path.exists(CSV_FILE):
+            return
+
+        # Upewnij się, że katalog backup istnieje
+        os.makedirs(BACKUP_DIR, exist_ok=True)
+
+        # Stwórz nazwę pliku z timestampem
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        backup_filename = f"{BACKUP_DIR}/wyniki_{timestamp}.csv"
+
+        shutil.copy2(CSV_FILE, backup_filename)
+        print(f"📦 Backup zapisany: {backup_filename}")
