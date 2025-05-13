@@ -65,5 +65,14 @@ def update_hide():
 
     return '', 204
 
+@app.route('/last-update')
+def last_update():
+    try:
+        with open("last_update.txt", "r") as f:
+            timestamp = f.read().strip()
+    except FileNotFoundError:
+        timestamp = "Brak danych"
+    return jsonify({"last_update": timestamp})
+
 if __name__ == '__main__':
     app.run(debug=True, port=5555)

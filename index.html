@@ -36,11 +36,15 @@
 <script>
 const tableBody = document.getElementById('table-body');
 
-// TODO: Change to the real timestamp of the new offers arrival!
+fetch('/last-update')
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("update-date").textContent = data.last_update || 'Brak danych';
+  });
+
 fetch('/get-data')
   .then(res => res.json())
   .then(data => {
-    document.getElementById("update-date").textContent = new Date().toLocaleString("pl-PL");
     renderTable(data);
   });
 

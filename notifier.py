@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from datetime import datetime
 from twilio.rest import Client
 import smtplib
 from email.mime.text import MIMEText
@@ -55,6 +56,10 @@ def send_whatsapp_notification():
 
 
 def main():
+    # Zapisz czas aktualizacji do pliku
+    with open("last_update.txt", "w") as f:
+        f.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
     if Path('notify.flag').exists():
         send_email_notification()
         send_whatsapp_notification()
