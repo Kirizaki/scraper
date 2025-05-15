@@ -4,9 +4,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from csv_writer import init_csv, is_offer_saved, remove_duplicates, save_offer
 from scrapers.otodom_scraper import OtodomScraper
 from scrapers.olx_scraper import OlxScraper
-from scrapers.gratka_scraper import GratkaScraper
-from scrapers.morizon_scraper import MorizonScraper
-from scrapers.adresowo_scraper import AdresowoScraper
 import time
 
 def process_scraper(scraper_cls):
