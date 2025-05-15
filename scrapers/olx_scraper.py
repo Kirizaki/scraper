@@ -108,7 +108,9 @@ class OlxScraper(RealEstateScraper):
         return 999  # Można też zwrócić np. None, jeśli nie znaleziono
 
     def init_driver(self):
+        unique_dir = f"/home/ubuntu/olx_scraper_{self.date_now()}/"
         chrome_options = Options()
+        chrome_options.add_argument(f"--user-data-dir={unique_dir}")
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--no-sandbox")
