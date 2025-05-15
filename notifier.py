@@ -60,10 +60,10 @@ def main():
     with open("last_update.txt", "w") as f:
         f.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
-    if Path('notify.flag').exists():
+    if Path('/home/ubuntu/scraper/notify.flag').exists():
         send_email_notification()
         send_whatsapp_notification()
-        Path('notify.flag').unlink()
+        Path('/home/ubuntu/scraper/notify.flag').unlink()
     else:
         print("Brak nowych ofert.")
 
