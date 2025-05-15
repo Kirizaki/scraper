@@ -76,7 +76,7 @@ class MorizonScraper(RealEstateScraper):
                     save_offer_backup(offer, self.src+".csv")
 
                 except Exception as e:
-                    print(f"[{self.src}] błąd podczas sprawdzania oferty: {link} ({e})")
+                    print(f"[{self.src}] błąd podczas sprawdzania oferty: {link}")
                 time.sleep(0.5)
 
             page += 1

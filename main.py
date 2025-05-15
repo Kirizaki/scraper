@@ -7,6 +7,7 @@ from scrapers.olx_scraper import OlxScraper
 from scrapers.adresowo_scraper import AdresowoScraper
 from scrapers.gratka_scraper import GratkaScraper
 from scrapers.morizon_scraper import MorizonScraper
+from scrapers.nieruchomosci_scraper import NieruchomosciOnlineScraper
 import time
 
 def process_scraper(scraper_cls):
@@ -17,7 +18,7 @@ def main():
     start = time.time()
     init_csv()
 
-    scrapers = [GratkaScraper, OlxScraper, OtodomScraper, AdresowoScraper, MorizonScraper]
+    scrapers = [GratkaScraper, OlxScraper, OtodomScraper, AdresowoScraper, MorizonScraper, NieruchomosciOnlineScraper]
 
     offers_all = []
     with ThreadPoolExecutor(max_workers=len(scrapers)) as executor:
