@@ -72,9 +72,9 @@ class OtodomScraper(RealEstateScraper):
                     offer = {
                         "url": link,
                         "tytul": title,
-                        "cena": price,
-                        "powierzchnia": area_val,
-                        "na_metr": price_on_meter,
+                        "cena": int(price),
+                        "powierzchnia": int(area_val),
+                        "na_metr": int(price_on_meter),
                         "zrodlo": self.src,
                         "data_dodania": self.date_now(),
                         "fav": '0',

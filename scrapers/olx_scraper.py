@@ -79,9 +79,9 @@ class OlxScraper(RealEstateScraper):
                         offer = {
                             "url": link,
                             "tytul": title,
-                            "cena": price,
-                            "powierzchnia": area,
-                            "na_metr": round(price_per_m),
+                            "cena": int(price),
+                            "powierzchnia": int(area),
+                            "na_metr": int(price_per_m),
                             "zrodlo": self.src,
                             "data_dodania": self.date_now(),
                             "fav": '0',

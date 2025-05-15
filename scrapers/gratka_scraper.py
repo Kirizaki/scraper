@@ -84,9 +84,9 @@ class GratkaScraper(RealEstateScraper):
                     offer = {
                         "url": link,
                         "tytul": title,
-                        "cena": price,
-                        "powierzchnia": area_val,
-                        "na_metr": price_per_m,
+                        "cena": int(price),
+                        "powierzchnia": int(area_val),
+                        "na_metr": int(price_per_m),
                         "zrodlo": self.src,
                         "data_dodania": self.date_now(),
                         "fav": '0',
