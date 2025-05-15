@@ -1,8 +1,7 @@
 import requests, re
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
+import tempfile
 import time
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, parse_qs
@@ -108,14 +107,22 @@ class OlxScraper(RealEstateScraper):
         return 999  # Można też zwrócić np. None, jeśli nie znaleziono
 
     def init_driver(self):
-        unique_dir = f"/home/ubuntu/olx_scraper_{self.date_now()}/"
         chrome_options = Options()
-        chrome_options.add_argument(f"--user-data-dir={unique_dir}")
-        chrome_options.add_argument("--headless")
+
+        # 🔹 Headless mode (można wyłączyć jeśli debugujesz z GUI)
+        chrome_options.add_argument("--headless=new")
+
+        # 🔹 Bezpieczne flagi
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--window-size=1920x1080")
-        driver = webdriver.Chrome(options=chrome_options)  # lub Firefox(), jeśli preferujesz
+
+        # 🔹 Unikalny katalog profilu przeglądarki
+        unique_profile_dir = tempfile.mkdtemp()
+        chrome_options.add_argument(f"--user-data-dir={unique_profile_dir}")
+
+        # 🔹 Tworzymy driver
+        driver = webdriver.Chrome(options=chrome_options)
         return driver
 
     def scroll_to_load_all(self, step=200, pause=0.5, max_wait=5):
