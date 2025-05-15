@@ -18,7 +18,7 @@ def main():
     init_csv()
 
     # scrapers = [MorizonScraper, OlxScraper, GratkaScraper, MorizonScraper, AdresowoScraper, OtodomScraper]
-    scrapers = [OtodomScraper]
+    scrapers = [OlxScraper, OtodomScraper]
 
     offers_all = []
     with ThreadPoolExecutor(max_workers=len(scrapers)) as executor:
@@ -42,6 +42,7 @@ def main():
         with open('notify.flag', 'w') as f:
             f.write('yes')
             remove_duplicates()
+            
     else:
         if os.path.exists('notify.flag'):
             os.remove('notify.flag') 

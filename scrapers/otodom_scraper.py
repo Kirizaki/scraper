@@ -87,19 +87,6 @@ class OtodomScraper(RealEstateScraper):
         self.log()
         return offers
 
-    def has_garden_in_additional_info(self, informacje_dodatkowe):
-        for info in informacje_dodatkowe:
-            for word in self.keywords:
-                return word in info.text
-
-        return False
-
-    def has_garden_in_desc(self, opis):
-        for word in self.keywords:
-            return word in opis
-
-        return False
-
     def get_page_number_from_url(self, url):
         """Zwraca numer strony wyciągnięty z URL"""
         parsed_url = urlparse(url)

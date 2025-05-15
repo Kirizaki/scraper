@@ -7,78 +7,86 @@ import time
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, parse_qs
 from scraper_base import RealEstateScraper
-from utils.garden_utils import has_garden
 from csv_writer import save_offer_backup
 
 BASE_URL = "https://www.olx.pl"
 
 class OlxScraper(RealEstateScraper):
     def scrape(self):
-        self.src = 'olx'
-        offers = []
         self.driver = self.init_driver()
-
         try:
-            # TODO: Add page iterations
-            self.driver.get(f"{BASE_URL}/nieruchomosci/mieszkania/sprzedaz/gdansk/?search%5Bdistrict_id%5D=99&search%5Border%5D=created_at%3Adesc")
-            self.scroll_to_load_all()
+            self.src = 'olx'
+            offers = []
+            page = 1
+            last_real_page = None
+            while True:
+                url = f"https://www.olx.pl/nieruchomosci/mieszkania/sprzedaz/gdansk/?page={page}&search%5Bdistrict_id%5D=99&search%5Border%5D=created_at%3Adesc"
+                self.driver.get(url)
+                self.scroll_to_load_all()
+                soup = BeautifulSoup(self.driver.page_source, 'html.parser')
 
-            soup = BeautifulSoup(self.driver.page_source, 'html.parser')
-            link_elements = soup.find_all("a", class_="css-1tqlkj0")
-            links = []
-            for link in link_elements:
-                if 'otodom.pl' in link.get("href"):
-                    continue
-                links.append(f'{BASE_URL}{link.get("href")}')
+                # Wyciągamy numer strony z URL
+                current_page = int(soup.find("li", class_="pagination-item__active").text.strip())
+                if current_page is None or current_page < page or current_page == last_real_page:
+                    print("Osiągnięto koniec listy ofert.")
+                    break
 
-            print(f"🔗 Znaleziono {len(links)} ofert po pełnym scrollu.")
-            for link in links:
-                try:
-                    self.counter += 1
-                    detail_res = requests.get(link, headers={"User-Agent": "Mozilla/5.0"})
-                    detail_soup = BeautifulSoup(detail_res.text, "html.parser")
+                print(f"\n   [{self.src}] przeszukuje stronę (#{page}): {self.driver.current_url}")
 
-                    body_text = detail_soup.get_text(separator=' ', strip=True)
-                    if "wrzeszcz" not in body_text.lower():
+                link_elements = soup.find_all("a", class_="css-1tqlkj0")
+                print(f"🔗 Znaleziono {len(link_elements)} ofert po pełnym scrollu.")
+                for link_element in link_elements:
+                    if 'otodom.pl' in link_element.get("href"):
                         continue
 
-                    garden, snippet = has_garden(body_text)
-                    # if not garden:
-                    #     continue
+                    link = f'{BASE_URL}{link_element.get("href")}'
+                    try:
+                        self.counter += 1
+                        detail_res = requests.get(link, headers={"User-Agent": "Mozilla/5.0"})
+                        detail_soup = BeautifulSoup(detail_res.text, "html.parser")
 
-                    title = detail_soup.find("h4", class_="css-10ofhqw").text
-                    price = self.extract_price(detail_soup.find("h3", class_="css-fqcbii").text) if detail_soup.find("h3", class_="css-fqcbii") else 0
+                        body_text = detail_soup.get_text(separator=' ', strip=True)
+                        if "wrzeszcz" not in body_text.lower():
+                            continue
 
-                    details_block = detail_soup.find_all("p", class_="css-1los5bp")
-                    details_text = " ".join(p.text for p in details_block)
-                    area = self.extract_surface(details_text)
-                    floor = self.extract_floor(details_text)
+                        if not self.has_garden_in_desc(body_text):
+                            continue
 
-                    price_per_m = price / area if area else 0
+                        title = detail_soup.find("h4", class_="css-10ofhqw").text
+                        price = self.extract_price(detail_soup.find("h3", class_="css-fqcbii").text) if detail_soup.find("h3", class_="css-fqcbii") else 0
 
-                    if area and (area < self.min_area or area > self.max_area):
-                        continue
-                    if floor > self.parter:
-                        continue
-                    if price_per_m > self.max_on_meter:
-                        continue
+                        details_block = detail_soup.find_all("p", class_="css-1los5bp")
+                        details_text = " ".join(p.text for p in details_block)
+                        area = self.extract_surface(details_text)
+                        floor = self.extract_floor(details_text)
 
-                    offer = {
-                        "url": link,
-                        "tytul": title,
-                        "cena": price,
-                        "powierzchnia": area,
-                        "na_metr": round(price_per_m),
-                        "zrodlo": self.src,
-                        "data_dodania": self.date_now(),
-                        "fav": '0',
-                        "hide": '0'
-                    }
-                    offers.append(offer)
-                    save_offer_backup(offer, self.src + ".csv")
-                    time.sleep(0.5)
-                except Exception as e:
-                    print(f"❌ Błąd przy ofercie {link}: {e}")
+                        price_per_m = price / area if area else 0
+
+                        if area and (area < self.min_area or area > self.max_area):
+                            continue
+                        if floor > self.parter:
+                            continue
+                        if price_per_m > self.max_on_meter:
+                            continue
+
+                        offer = {
+                            "url": link,
+                            "tytul": title,
+                            "cena": price,
+                            "powierzchnia": area,
+                            "na_metr": round(price_per_m),
+                            "zrodlo": self.src,
+                            "data_dodania": self.date_now(),
+                            "fav": '0',
+                            "hide": '0'
+                        }
+                        offers.append(offer)
+                        save_offer_backup(offer, self.src + ".csv")
+                        time.sleep(0.5)
+                    except Exception as e:
+                        print(f"❌ Błąd przy ofercie {link}: {e}")
+                last_real_page = page
+                page += 1
         finally:
             self.driver.quit()
 

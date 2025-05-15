@@ -46,6 +46,19 @@ class RealEstateScraper(ABC):
         """Zwraca listę ofert jako słowniki."""
         pass
 
+    def has_garden_in_additional_info(self, informacje_dodatkowe):
+        for info in informacje_dodatkowe:
+            for word in self.keywords:
+                return word in info.text
+
+        return False
+
+    def has_garden_in_desc(self, opis):
+        for word in self.keywords:
+            return word in opis
+
+        return False
+
     def date_now(self):
         # Pobranie bieżącej daty i godziny
         now = datetime.now()
