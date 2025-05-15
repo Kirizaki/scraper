@@ -13,7 +13,9 @@ BASE_URL = "https://www.olx.pl"
 
 class OlxScraper(RealEstateScraper):
     def scrape(self):
-        self.driver = self.init_driver()
+        # Unikalny katalog dla profilu
+        user_data_dir = tempfile.mkdtemp(prefix="selenium_profile_")
+        self.driver = self.init_driver(user_data_dir)
         try:
             self.src = 'olx'
             offers = []
@@ -89,6 +91,7 @@ class OlxScraper(RealEstateScraper):
                 page += 1
         finally:
             self.driver.quit()
+            self.cleanup(user_data_dir)
 
         self.log()
         return offers
@@ -107,21 +110,24 @@ class OlxScraper(RealEstateScraper):
             return int(match.group(1))
         return 999  # Można też zwrócić np. None, jeśli nie znaleziono
 
-    def init_driver(self):
+
+    def init_driver(self, user_data_dir):
         options = Options()
-        # options.add_argument("--headless")  # jeśli chcesz headless
-        options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
         options.add_argument("--window-size=1920,1080")
+
+        print("Using Chrome profile at:", user_data_dir)
+        options.add_argument(f"--user-data-dir={user_data_dir}")
 
         driver = webdriver.Chrome(options=options)
         return driver
 
-
-    def cleanup(self):
+    def cleanup(self, user_data_dir):
         # Usuwamy tymczasowy katalog profilu po zakończeniu pracy
-        if hasattr(self, '_temp_user_data_dir'):
-            shutil.rmtree(self._temp_user_data_dir, ignore_errors=True)
+        if hasattr(self, user_data_dir):
+            shutil.rmtree(user_data_dir, ignore_errors=True)
 
     def scroll_to_load_all(self, step=200, pause=0.5, max_wait=5):
         import time
