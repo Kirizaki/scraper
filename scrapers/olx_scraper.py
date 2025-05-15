@@ -108,23 +108,15 @@ class OlxScraper(RealEstateScraper):
         return 999  # Można też zwrócić np. None, jeśli nie znaleziono
 
     def init_driver(self):
-        chrome_options = Options()
-        # Jeśli chcesz headless, odkomentuj poniżej:
-        chrome_options.add_argument("--headless")
+        options = Options()
+        # options.add_argument("--headless")  # jeśli chcesz headless
+        options.add_argument("--disable-gpu")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--window-size=1920,1080")
 
-        # Tworzymy unikalny tymczasowy folder na profil Chrome
-        user_data_dir = tempfile.mkdtemp(prefix="chrome-user-data-")
-        chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
-
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--window-size=1920x1080")
-
-        driver = webdriver.Chrome(options=chrome_options)
-
-        # Zachowujemy ścieżkę, aby móc usunąć katalog później
-        self._temp_user_data_dir = user_data_dir
+        driver = webdriver.Chrome(options=options)
         return driver
+
 
     def cleanup(self):
         # Usuwamy tymczasowy katalog profilu po zakończeniu pracy
