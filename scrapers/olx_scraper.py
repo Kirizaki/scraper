@@ -126,8 +126,7 @@ class OlxScraper(RealEstateScraper):
 
     def cleanup(self, user_data_dir):
         # Usuwamy tymczasowy katalog profilu po zakończeniu pracy
-        if hasattr(self, user_data_dir):
-            shutil.rmtree(user_data_dir, ignore_errors=True)
+        shutil.rmtree(user_data_dir, ignore_errors=True)
 
     def scroll_to_load_all(self, step=200, pause=0.5, max_wait=5):
         import time
