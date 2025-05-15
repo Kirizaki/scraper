@@ -15,8 +15,8 @@ class OlxScraper(RealEstateScraper):
     def scrape(self):
         # Unikalny katalog dla profilu
         user_data_dir = tempfile.mkdtemp(prefix="selenium_profile_")
-        self.driver = self.init_driver(user_data_dir)
         try:
+            self.driver = self.init_driver(user_data_dir)
             self.src = 'olx'
             offers = []
             page = 1
