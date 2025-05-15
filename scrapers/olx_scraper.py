@@ -1,3 +1,4 @@
+import shutil
 import requests, re
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -108,17 +109,27 @@ class OlxScraper(RealEstateScraper):
 
     def init_driver(self):
         chrome_options = Options()
+        # Jeśli chcesz headless, odkomentuj poniżej:
         chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--window-size=1920,1080")
 
-        # Tworzymy unikalny folder profilu na bazie uuid4
-        user_data_dir = tempfile.mkdtemp(prefix="selenium_profile_")
+        # Tworzymy unikalny tymczasowy folder na profil Chrome
+        user_data_dir = tempfile.mkdtemp(prefix="chrome-user-data-")
         chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
 
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--window-size=1920x1080")
+
         driver = webdriver.Chrome(options=chrome_options)
+
+        # Zachowujemy ścieżkę, aby móc usunąć katalog później
+        self._temp_user_data_dir = user_data_dir
         return driver
+
+    def cleanup(self):
+        # Usuwamy tymczasowy katalog profilu po zakończeniu pracy
+        if hasattr(self, '_temp_user_data_dir'):
+            shutil.rmtree(self._temp_user_data_dir, ignore_errors=True)
 
     def scroll_to_load_all(self, step=200, pause=0.5, max_wait=5):
         import time
