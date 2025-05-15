@@ -28,13 +28,13 @@ class OlxScraper(RealEstateScraper):
                 # Wyciągamy numer strony z URL
                 current_page = int(soup.find("li", class_="pagination-item__active").text.strip())
                 if current_page is None or current_page < page or current_page == last_real_page:
-                    print("Osiągnięto koniec listy ofert.")
+                    print(f"[{self.src}]Osiągnięto koniec listy ofert.")
                     break
 
                 print(f"\n   [{self.src}] przeszukuje stronę (#{page}): {self.driver.current_url}")
 
                 link_elements = soup.find_all("a", class_="css-1tqlkj0")
-                print(f"🔗 Znaleziono {len(link_elements)} ofert po pełnym scrollu.")
+                print(f"[{self.src}]🔗 Znaleziono {len(link_elements)} ofert po pełnym scrollu.")
                 for link_element in link_elements:
                     if 'otodom.pl' in link_element.get("href"):
                         continue
@@ -84,7 +84,7 @@ class OlxScraper(RealEstateScraper):
                         save_offer_backup(offer, self.src + ".csv")
                         time.sleep(0.5)
                     except Exception as e:
-                        print(f"❌ Błąd przy ofercie {link}: {e}")
+                        print(f"[{self.src}]❌ Błąd przy ofercie {link}: {e}")
                 last_real_page = page
                 page += 1
         finally:
@@ -109,7 +109,7 @@ class OlxScraper(RealEstateScraper):
 
     def init_driver(self):
         chrome_options = Options()
-        # chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--window-size=1920x1080")
