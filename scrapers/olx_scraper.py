@@ -37,6 +37,7 @@ class OlxScraper(RealEstateScraper):
 
                 link_elements = soup.find_all("a", class_="css-1tqlkj0")
                 print(f"[{self.src}]🔗 Znaleziono {len(link_elements)} ofert po pełnym scrollu.")
+                link = 'pierwszy_link'
                 for link_element in link_elements:
                     if 'otodom.pl' in link_element.get("href"):
                         continue
@@ -49,6 +50,10 @@ class OlxScraper(RealEstateScraper):
 
                         body_text = detail_soup.get_text(separator=' ', strip=True)
                         if "wrzeszcz" not in body_text.lower():
+                            continue
+
+                        street_text = self.extract_street_name(body_text)
+                        if street_text and not self.proper_street(street_text):
                             continue
 
                         if not self.has_garden_in_desc(body_text):
@@ -85,8 +90,8 @@ class OlxScraper(RealEstateScraper):
                         offers.append(offer)
                         save_offer_backup(offer, self.src + ".csv")
                         time.sleep(0.5)
-                    except Exception as e:
-                        print(f"[{self.src}]❌ Błąd przy ofercie {link}: {e}")
+                    except:
+                        print(f'[{self.src}] błąd podczas sprawdzania oferty: {link}')
                 last_real_page = page
                 page += 1
         finally:
@@ -96,6 +101,12 @@ class OlxScraper(RealEstateScraper):
 
         self.log()
         return offers
+
+    def extract_street_name(self, text: str) -> str | None:
+        matches = re.findall(r'ul\.?\s+([A-ZĄĆĘŁŃÓŚŹŻ][\wąćęłńóśźż\-]+(?:\s+[A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż0-9/]+)*)', text)
+
+        # Zwróć pierwszy dopasowany wynik
+        return matches[0] if matches else None
 
     def extract_surface(self, text):
         match = re.search(r"Powierzchnia:\s*([\d,.]+)", text)
@@ -115,6 +126,7 @@ class OlxScraper(RealEstateScraper):
     def init_driver(self, user_data_dir):
         options = Options()
         options.add_argument("--no-sandbox")
+        options.add_argument("--headless")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--disable-gpu")
         options.add_argument("--window-size=1920,1080")

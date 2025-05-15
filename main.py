@@ -4,6 +4,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from csv_writer import init_csv, is_offer_saved, remove_duplicates, save_offer
 from scrapers.otodom_scraper import OtodomScraper
 from scrapers.olx_scraper import OlxScraper
+from scrapers.adresowo_scraper import AdresowoScraper
+from scrapers.gratka_scraper import GratkaScraper
 import time
 
 def process_scraper(scraper_cls):
@@ -14,8 +16,7 @@ def main():
     start = time.time()
     init_csv()
 
-    # scrapers = [MorizonScraper, OlxScraper, GratkaScraper, MorizonScraper, AdresowoScraper, OtodomScraper]
-    scrapers = [OlxScraper, OtodomScraper]
+    scrapers = [GratkaScraper, OlxScraper, OtodomScraper, AdresowoScraper]
 
     offers_all = []
     with ThreadPoolExecutor(max_workers=len(scrapers)) as executor:

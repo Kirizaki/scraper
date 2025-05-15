@@ -33,54 +33,57 @@ class OtodomScraper(RealEstateScraper):
             if not offer_articles:
                 break
 
+            link = 'pierwszy_link'
             for offer in offer_articles:
-                address = offer.find("p", class_="css-1jjm9oe e13d3jhg1") or offer.find("p", class_="css-42r2ms eejmx80")
-                if not address or "wrzeszcz" not in address.text.lower():
-                    continue
+                try:
+                    address = offer.find("p", class_="css-1jjm9oe e13d3jhg1") or offer.find("p", class_="css-42r2ms eejmx80")
+                    if not address or "wrzeszcz" not in address.text.lower():
+                        continue
 
-                street_text = offer.find('p', class_="css-42r2ms eejmx80").text
-                if self.has_street(street_text) and not self.proper_street(street_text):
-                    continue
+                    street_text = offer.find('p', class_="css-42r2ms eejmx80").text
+                    if self.has_street(street_text) and not self.proper_street(street_text):
+                        continue
 
-                self.counter += 1
-                link = BASE_URL + offer.find("a")['href'].split('?')[0]
+                    self.counter += 1
+                    link = BASE_URL + offer.find("a")['href'].split('?')[0]
 
-                detail_res = requests.get(link, headers={"User-Agent": "Mozilla/5.0"})
-                detail_soup = BeautifulSoup(detail_res.text, "html.parser")
-                details = detail_soup.find_all("span", class_="css-axw7ok esen0m94")
-                if not self.has_garden_in_additional_info(details):
-                    continue
+                    detail_res = requests.get(link, headers={"User-Agent": "Mozilla/5.0"})
+                    detail_soup = BeautifulSoup(detail_res.text, "html.parser")
+                    details = detail_soup.find_all("span", class_="css-axw7ok esen0m94")
+                    if not self.has_garden_in_additional_info(details):
+                        continue
 
-                title = detail_soup.find("h1").text.strip()
-                price = detail_soup.find("strong", class_="css-1o51x5a e1k1vyr21").contents[0].text.strip()
+                    title = detail_soup.find("h1").text.strip()
+                    price = detail_soup.find("strong", class_="css-1o51x5a e1k1vyr21").contents[0].text.strip()
 
-                area_val = self.extract_surface(offer.find('dl', class_="css-9q2yy4 eyjpr0t1").text)
-                if area_val and (area_val < self.min_area or area_val > self.max_area):
-                    continue
+                    area_val = self.extract_surface(offer.find('dl', class_="css-9q2yy4 eyjpr0t1").text)
+                    if area_val and (area_val < self.min_area or area_val > self.max_area):
+                        continue
 
-                floor = self.extract_floor(offer.find('dl', class_="css-9q2yy4 eyjpr0t1").text)
-                if floor > self.parter:
-                    continue
+                    floor = self.extract_floor(offer.find('dl', class_="css-9q2yy4 eyjpr0t1").text)
+                    if floor > self.parter:
+                        continue
 
-                price = self.extract_price(detail_soup.find('strong', class_="css-1o51x5a e1k1vyr21").text)
-                price_on_meter = self.extract_price(detail_soup.find('div', class_="css-z3xj2a e1k1vyr25").text)
-                if price_on_meter and price_on_meter > self.max_on_meter:
-                    continue
+                    price = self.extract_price(detail_soup.find('strong', class_="css-1o51x5a e1k1vyr21").text)
+                    price_on_meter = self.extract_price(detail_soup.find('div', class_="css-z3xj2a e1k1vyr25").text)
+                    if price_on_meter and price_on_meter > self.max_on_meter:
+                        continue
 
-                offer = {
-                    "url": link,
-                    "tytul": title,
-                    "cena": price,
-                    "powierzchnia": area_val,
-                    "na_metr": price_on_meter,
-                    "zrodlo": self.src,
-                    "data_dodania": self.date_now(),
-                    "fav": '0',
-                    "hide": '0'
-                }
-                offers.append(offer)
-                save_offer_backup(offer, self.src+".csv")
-
+                    offer = {
+                        "url": link,
+                        "tytul": title,
+                        "cena": price,
+                        "powierzchnia": area_val,
+                        "na_metr": price_on_meter,
+                        "zrodlo": self.src,
+                        "data_dodania": self.date_now(),
+                        "fav": '0',
+                        "hide": '0'
+                    }
+                    offers.append(offer)
+                    save_offer_backup(offer, self.src+".csv")
+                except:
+                    print(f'[{self.src}] błąd podczas sprawdzania oferty: {link}')
                 time.sleep(0.5)
             page += 1
             time.sleep(1)
