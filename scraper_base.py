@@ -55,7 +55,7 @@ class RealEstateScraper(ABC):
 
     def has_garden_in_desc(self, opis):
         for word in self.keywords:
-            return word in opis
+            return word.lower() in opis.lower()
 
         return False
 
