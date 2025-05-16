@@ -12,6 +12,7 @@ class LocumNetScraper(RealEstateScraper):
         offers = []
         page = 1
         while True:
+            'https://oferty.locumnet.pl/lista-ofert/lw/mieszkania/sprzedaz/Gda%C5%84sk---Dowolna----------/'
             url = f"{BASE_URL}/oferty/mieszkania/gdansk/wrzeszcz?page={page}"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             if res.status_code != 200:

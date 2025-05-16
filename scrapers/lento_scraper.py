@@ -10,6 +10,7 @@ class LentoScraper(RealEstateScraper):
         offers = []
         page = 1
         while True:
+            'https://gdansk.lento.pl/nieruchomosci/mieszkania.html?price_to=1500000&atr_1_from=50&atr_1_to=125&atr_5_in%5B0%5D=2&d=wrzeszcz'
             url = f"{self.BASE_URL}?page={page}"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             soup = BeautifulSoup(res.text, "html.parser")

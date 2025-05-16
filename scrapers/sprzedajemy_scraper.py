@@ -12,6 +12,7 @@ class SprzedajemyScraper(RealEstateScraper):
         offers = []
         page = 1
         while True:
+            'https://sprzedajemy.pl/nieruchomosci/mieszkania/sprzedaz?inp_price%5Bto%5D=1500000&amp;inp_attribute_143%5Bto%5D=125&amp;inp_attribute_149%5B0%5D=618&amp;inp_attribute_150%5Bfrom%5D=0&amp;inp_attribute_150%5Bto%5D=0&amp;inp_attribute_252%5Bto%5D=18000'
             url = f"{BASE_URL}/nieruchomosci/mieszkania/gdansk/wrzeszcz?page={page}"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             if res.status_code != 200:

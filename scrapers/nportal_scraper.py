@@ -12,6 +12,7 @@ class NportalScraper(RealEstateScraper):
         offers = []
         page = 1
         while True:
+            'http://nportal.pl/mieszkania/gdansk/wrzeszcz-gorny/?ps%5Bsort_order%5D=rank&ps%5Bprice_to%5D=1500000&ps%5Bliving_area_to%5D=125&ps%5Bfloor_from%5D=0&ps%5Bfloor_to%5D=0&ps%5Bhas_balcony%5D=1'
             url = f"{BASE_URL}/nieruchomosci/mieszkania/gdansk/wrzeszcz?page={page}"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             if res.status_code != 200:

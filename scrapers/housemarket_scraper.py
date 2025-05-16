@@ -12,6 +12,7 @@ class HouseMarketScraper(RealEstateScraper):
         offers = []
         page = 1
         while True:
+            'https://www.housemarket.pl/oferty/nieruchomosci/?nieruchomosci_miejscowosc=Gda%C5%84sk&nieruchomosci_miejscowosc_id=97&cenaOd=-1&cenaDo=1500000&metrazOd=-1&metrazDo=125&pietroOd=0&pietroDo=0'
             url = f"{BASE_URL}/oferty/nieruchomosci/gdansk/wrzeszcz/?page={page}"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             if res.status_code != 200:
