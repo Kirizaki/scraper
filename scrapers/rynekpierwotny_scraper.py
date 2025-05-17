@@ -12,6 +12,7 @@ class RynekPierwotnyScraper(RealEstateScraper):
         offers = []
         page = 1
         while True:
+            'https://rynekpierwotny.pl/s/nowe-mieszkania-i-domy-gdansk-wrzeszcz-gorny-cena-do-1500000-zl-powierzchnia-od-50-do-125-m2/?distance=0&sort=2'
             url = f"{BASE_URL}/s/nowe-mieszkania-i-domy/gdansk-wrzeszcz/?page={page}"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             if res.status_code != 200:

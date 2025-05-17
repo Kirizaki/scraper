@@ -11,6 +11,7 @@ class WGNScraper(RealEstateScraper):
         offers = []
         page = 1
         while True:
+            'https://wgn.pl/sprzedaz/mieszkanie/gdansk-wrzeszcz/?search%5BpriceDefTo%5D=1%2C500%2C000&search%5BsquereFrom%5D=50&search%5BsquereTo%5D=125&search%5BpriceDefm2To%5D=18%2C000&search%5BadditionalInfo%5D%5B0%5D=10'
             url = f"{BASE_URL}/mieszkania/sprzedaz/gdansk?strona={page}"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             soup = BeautifulSoup(res.text, "html.parser")

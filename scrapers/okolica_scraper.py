@@ -11,6 +11,7 @@ class OkolicaScraper(RealEstateScraper):
         offers = []
         page = 1
         while True:
+            'https://www.okolica.pl/search/?browser[query]=gda%C5%84sk,%20pomorskie&browser[property]=mieszkanie&browser[transaction]=S&browser[distance]=&browser[bounds]=54.27489,18.42947,54.44655,18.95169'
             url = f"{BASE_URL}/mieszkania/sprzedaz/gdansk/wrzeszcz/?page={page}"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             soup = BeautifulSoup(res.text, "html.parser")

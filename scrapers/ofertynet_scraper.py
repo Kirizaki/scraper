@@ -12,6 +12,7 @@ class OfertyNetScraper(RealEstateScraper):
         offers = []
         page = 1
         while True:
+            'https://www.oferty.net/mieszkania/szukaj?psm%5Badvanced_search%5D=1&psm%5Btype%5D=1&psm%5Bfavourites%5D=0&psm%5Blocation%5D%5Btype%5D=1&psm%5Blocation%5D%5Btext_queue%5D%5B%5D=Gda%C5%84sk+Wrzeszcz+G%C3%B3rny&psm%5Btransaction%5D=1&psm%5Bliving_area_to%5D=125&psm%5Bprice_to%5D=1500000&psm%5Bprice_m2_to%5D=18000&psm%5Bfloor_from%5D=0&psm%5Bfloor_to%5D=0&psm%5Bowner%5D%5B%5D=1&psm%5Bowner%5D%5B%5D=4&psm%5Bowner%5D%5B%5D=2&psm%5Bowner%5D%5B%5D=128&psm%5Bdate_filter%5D=0&psm%5Bsort_order%5D=added_at_desc'
             url = f"{BASE_URL}/mieszkania/sprzedaz/gdansk,wrzeszcz/?page={page}"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             if res.status_code != 200:

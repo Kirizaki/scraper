@@ -10,7 +10,6 @@ from scrapers.morizon_scraper import MorizonScraper
 from scrapers.nieruchomosci_scraper import NieruchomosciOnlineScraper
 from scrapers.trojmiasto_scraper import TrojmiastoScraper
 from scrapers.obido_scraper import ObidoScraper
-from scrapers.trovit_scraper import TrovitScraper
 import time
 
 def process_scraper(scraper_cls):
