@@ -11,7 +11,7 @@ class DomiportaScraper(RealEstateScraper):
         offers = []
         page = 1
         while True:
-            'https://www.domiporta.pl/mieszkanie/sprzedam/pomorskie/gdansk/wrzeszcz-gorny?Surface.To=125&PricePerMeter.To=1500000&Pietro.From=0&Pietro.To=0&EstateFacilities=ogr%C3%B3dek.10571'
+            'https://www.domiporta.pl/mieszkanie/sprzedam/pomorskie/gdansk/wrzeszcz?Surface.To=125&PricePerMeter.To=1500000&Pietro.From=0&Pietro.To=0&EstateFacilities=ogr%C3%B3dek.10571'
             url = f"{BASE_URL}/mieszkanie/sprzedam/pomorskie/gdansk/wrzeszcz?page={page}"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             soup = BeautifulSoup(res.text, "html.parser")

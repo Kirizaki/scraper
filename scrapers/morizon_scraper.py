@@ -14,7 +14,7 @@ class MorizonScraper(RealEstateScraper):
         page = 1
 
         while True:
-            url = f"{BASE_URL}/mieszkania/najnowsze/gdansk/wrzeszcz-gorny/?page={page}"
+            url = f"{BASE_URL}/mieszkania/najnowsze/gdansk/wrzeszcz/?page={page}"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             if page > 1:
                 real_page = self.extract_page_number(res.url)
