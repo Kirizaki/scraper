@@ -30,13 +30,13 @@ class OlxScraper(RealEstateScraper):
                 # Wyciągamy numer strony z URL
                 current_page = int(soup.find("li", class_="pagination-item__active").text.strip())
                 if current_page is None or current_page < page or current_page == last_real_page:
-                    print(f"[{self.src}]Osiągnięto koniec listy ofert.")
+                    print(f"\n   [{self.src}]Osiągnięto koniec listy ofert.")
                     break
 
                 print(f"\n   [{self.src}] przeszukuje stronę (#{page}): {self.driver.current_url}")
 
                 link_elements = soup.find_all("a", class_="css-1tqlkj0")
-                print(f"[{self.src}]🔗 Znaleziono {len(link_elements)} ofert po pełnym scrollu.")
+                print(f"\n   [{self.src}]🔗 Znaleziono {len(link_elements)} ofert po pełnym scrollu.")
                 link = 'pierwszy_link'
                 for link_element in link_elements:
                     if 'otodom.pl' in link_element.get("href"):
@@ -91,7 +91,7 @@ class OlxScraper(RealEstateScraper):
                         save_offer_backup(offer, self.src + ".csv")
                         time.sleep(0.5)
                     except:
-                        print(f'[{self.src}] błąd podczas sprawdzania oferty: {link}')
+                        print(f"\n   [{self.src}] błąd podczas sprawdzania oferty: {link}")
                 last_real_page = page
                 page += 1
         finally:

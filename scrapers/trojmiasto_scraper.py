@@ -70,7 +70,7 @@ class TrojmiastoScraper(RealEstateScraper):
                     offers.append(offer)
                     save_offer_backup(offer, self.src+".csv")
                 except Exception as e:
-                    print(f"[{self.src}] błąd podczas sprawdzania oferty: {link}:\n{e}")
+                    print(f"\n   [{self.src}] błąd podczas sprawdzania oferty: {link}:\n{e}")
                 time.sleep(0.5)
             page += 1
             time.sleep(1)

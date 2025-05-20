@@ -74,7 +74,7 @@ class AdresowoScraper(RealEstateScraper):
                     offers.append(offer)
                     save_offer_backup(offer, self.src+".csv")
                 except:
-                    print(f'[{self.src}] błąd podczas sprawdzania oferty: {link}')
+                    print(f"\n   [{self.src}] błąd podczas sprawdzania oferty: {link}")
                 time.sleep(0.5)
             page += 1
             time.sleep(1)

@@ -3,7 +3,7 @@ import time
 import re
 from bs4 import BeautifulSoup
 from scraper_base import RealEstateScraper
-from csv_writer import is_offer_saved, save_offer_backup
+from csv_writer import save_offer_backup
 
 BASE_URL = "https://www.nieruchomosci-online.pl"
 
@@ -20,7 +20,7 @@ class NieruchomosciOnlineScraper(RealEstateScraper):
             try:
                 current_page_number = soup.find('ul', class_="pagination-mob-sub").find('span', class_='active').text.strip()
             except:
-                print(f'[{self.src}] problem z wyciaganiem numeru strony dla: {url}')
+                pass
 
             if current_page_number and int(current_page_number) != page:
                 break
@@ -74,7 +74,7 @@ class NieruchomosciOnlineScraper(RealEstateScraper):
                     offers.append(offer)
                     save_offer_backup(offer, self.src+".csv")
                 except Exception as e:
-                    print(f"[{self.src}] błąd podczas sprawdzania oferty: {link}\n{e}")
+                    print(f"\n   [{self.src}] błąd podczas sprawdzania oferty: {link}\n{e}")
                 time.sleep(0.5)
             
             page += 1

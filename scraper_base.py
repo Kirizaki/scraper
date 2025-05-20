@@ -22,7 +22,7 @@ class RealEstateScraper(ABC):
     def __init__(self) -> None:
         self.counter = 0
         self.src = '..'
-        self.keywords = ["ogród", "ogrod", "ogrodek", "ogródek", "z ogrodem", "dostęp do ogrodu", "dostep do ogrodu"]
+        self.keywords = ["ogród", "ogrod", "ogrodek", "ogródek", "z ogrodem", "dostęp do ogrodu", "dostep do ogrodu", "balkon", "taras", "loggia", "galeria", "weranda", "przybudówka", "dziedziniec", "patio", "podest", "platforma"]
         self.max_on_meter = 17000
         self.min_area = 50
         self.max_area = 125
@@ -144,3 +144,12 @@ class RealEstateScraper(ABC):
         # Usuń wszystkie znaki niebędące cyframi
         numeric_str = re.sub(r'\D', '', text)
         return float(numeric_str) if numeric_str else None
+
+    def find_div_with_child_text(self, soup, target_text):
+        # Znajdź wszystkie divy
+        for div in soup.find_all("div"):
+            # Sprawdź wszystkie dzieci danego div-a
+            for child in div.descendants:
+                if child.name and child.get_text(strip=True) == target_text:
+                    return div
+        return None

@@ -41,8 +41,16 @@ class GratkaScraper(RealEstateScraper):
                     detail_res = requests.get(link, headers={"User-Agent": "Mozilla/5.0"})
                     detail_soup = BeautifulSoup(detail_res.text, "html.parser")
                     body_text = detail_soup.find('div', class_="Dx7LS- OUtXFF ofQE0x").text.strip()
-                    details = detail_soup.find('div', class_="XMKqaz").text.strip()
-                    if not self.has_garden_in_desc(body_text) and not self.has_garden_in_desc(details):
+                    details = detail_soup.find('div', class_="XMKqaz")
+                    if not details:
+                        details = detail_soup.find('div', class_="_8pMvDc")
+                        if not details:
+                            details = ''
+                        else:
+                            details = details.text.strip()
+                    else:
+                        details = details.text.strip()
+                    if not self.has_garden_in_desc(details) and not self.has_garden_in_desc(body_text):
                         continue
 
                     # Nazwa ulicy — do ew. walidacji
@@ -55,7 +63,7 @@ class GratkaScraper(RealEstateScraper):
 
                     # Cena
                     try:
-                        price = detail_soup.find("span", class_="maMBkV").text.strip().replace(' ', '').replace('zł', '').replace('zl', '')
+                        price = int(detail_soup.find("span", class_="maMBkV").text.strip().replace(' ', '').replace('zł', '').replace('zl', ''))
                     except:
                         continue
 
@@ -95,7 +103,7 @@ class GratkaScraper(RealEstateScraper):
                     offers.append(offer)
                     save_offer_backup(offer, self.src + ".csv")
                 except:
-                    print(f'[{self.src}] błąd podczas sprawdzania oferty: {link}')
+                    print(f"\n   [{self.src}] błąd podczas sprawdzania oferty: {link}")
                 time.sleep(0.5)
 
             page += 1

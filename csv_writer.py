@@ -32,6 +32,11 @@ def save_offer_backup(offer: dict, filename: str):
             writer.writerow(offer)
 
 def is_offer_saved(url: str) -> bool:
+    # TODO: Duplicates due to different postfix in url:
+    # https://obido.pl/rynek-pierwotny-trojmiasto/kusocinskiego/mieszkanie-c_89.html#from_search_2,Kusocińskiego Budynek A,815925,64,12748,obido,08:19-20-05-2025,0,1
+    # https://obido.pl/rynek-pierwotny-trojmiasto/kusocinskiego/mieszkanie-a_07.html#from_search_10,Kusocińskiego Budynek A,946964,78,12140,obido,08:19-20-05-2025,0,1
+    # https://obido.pl/rynek-pierwotny-trojmiasto/kusocinskiego/mieszkanie-c_89.html#from_search_3,Kusocińskiego Budynek A,815925,64,12748,obido,10:25-20-05-2025,0,0
+    # https://obido.pl/rynek-pierwotny-trojmiasto/kusocinskiego/mieszkanie-a_07.html#from_search_1,Kusocińskiego Budynek A,946964,78,12140,obido,10:25-20-05-2025,0,0
     if not os.path.exists(CSV_FILE):
         return False
     with open(CSV_FILE, 'r', newline='', encoding='utf-8') as f:

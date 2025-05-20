@@ -33,8 +33,13 @@ class MorizonScraper(RealEstateScraper):
                     self.counter += 1
                     link = BASE_URL + offer.get("href")
                     detail_res = requests.get(link, headers={"User-Agent": "Mozilla/5.0"})
+                    if not detail_res:
+                        print(f"\n   [{self.src}] brak RESPONSE (#{page}): {url}")
                     detail_soup = BeautifulSoup(detail_res.text, "html.parser")
-                    body_text = detail_soup.find('div', class_="jda-sU OUtXFF ofQE0x").text.strip()
+                    body = self.find_div_with_child_text(detail_soup, "Opis nieruchomości")
+                    body_text = body.text.strip() if body else ''
+                    if not body_text:
+                        print(f"\n   [{self.src}] brak BODY TEXT (#{page}): {url}")
 
                     if not self.has_garden_in_desc(body_text):
                         continue
@@ -50,7 +55,13 @@ class MorizonScraper(RealEstateScraper):
                     if floor > self.parter:
                         continue
 
-                    price_text = detail_soup.find("div", class_="Fzi-XT").text.strip().replace(' ', '').replace('zł', '')
+                    price_el = detail_soup.find("div", class_="Fzi-XT")
+                    if price_el:
+                        price_text = price_el.text.strip().replace(' ', '').replace('zł', '')
+                    else:
+                        price_text = ''
+                        print(f"\n   [{self.src}] brak PRICE TEXT (#{page}): {url}")
+
                     price = int(price_text) if price_text.isdigit() else 0
                     if price == 0:
                         continue
@@ -76,7 +87,7 @@ class MorizonScraper(RealEstateScraper):
                     save_offer_backup(offer, self.src+".csv")
 
                 except Exception as e:
-                    print(f"[{self.src}] błąd podczas sprawdzania oferty: {link}")
+                    print(f"\n   [{self.src}] błąd podczas sprawdzania oferty: {link}\n{e}")
                 time.sleep(0.5)
 
             page += 1

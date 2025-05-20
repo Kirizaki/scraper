@@ -12,7 +12,6 @@ def main():
     start = time.time()
     init_csv()
 
-    # scrapers = [MorizonScraper, OlxScraper, GratkaScraper, MorizonScraper, AdresowoScraper, OtodomScraper]
     olx = OlxScraper()
 
     offers_all = []
