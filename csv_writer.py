@@ -31,17 +31,31 @@ def save_offer_backup(offer: dict, filename: str):
             writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
             writer.writerow(offer)
 
+from urllib.parse import urlparse
+
+def strip_url_fragment(url: str) -> str:
+    return url.split('#')[0]
+
 def is_offer_saved(url: str) -> bool:
-    # TODO: Duplicates due to different postfix in url:
-    # https://obido.pl/rynek-pierwotny-trojmiasto/kusocinskiego/mieszkanie-c_89.html#from_search_2,Kusocińskiego Budynek A,815925,64,12748,obido,08:19-20-05-2025,0,1
-    # https://obido.pl/rynek-pierwotny-trojmiasto/kusocinskiego/mieszkanie-a_07.html#from_search_10,Kusocińskiego Budynek A,946964,78,12140,obido,08:19-20-05-2025,0,1
-    # https://obido.pl/rynek-pierwotny-trojmiasto/kusocinskiego/mieszkanie-c_89.html#from_search_3,Kusocińskiego Budynek A,815925,64,12748,obido,10:25-20-05-2025,0,0
-    # https://obido.pl/rynek-pierwotny-trojmiasto/kusocinskiego/mieszkanie-a_07.html#from_search_1,Kusocińskiego Budynek A,946964,78,12140,obido,10:25-20-05-2025,0,0
+    if "obido" in url:
+        base_url = strip_url_fragment(url)
+    else:
+        base_url = url
+
     if not os.path.exists(CSV_FILE):
         return False
+
     with open(CSV_FILE, 'r', newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
-        return any(row["url"] == url for row in reader)
+        for row in reader:
+            if "obido" in url:
+                raw_url = row["url"]
+                saved_base_url = strip_url_fragment(row["url"])
+            else:
+                saved_base_url = raw_url
+            if saved_base_url == base_url:
+                return True
+    return False
 
 def remove_duplicates():
     with csv_lock:  # Blokujemy dostęp do zapisu w pliku CSV
