@@ -49,10 +49,9 @@ def is_offer_saved(url: str) -> bool:
         reader = csv.DictReader(f)
         for row in reader:
             if "obido" in url:
-                raw_url = row["url"]
                 saved_base_url = strip_url_fragment(row["url"])
             else:
-                saved_base_url = raw_url
+                saved_base_url = row["url"]
             if saved_base_url == base_url:
                 return True
     return False
