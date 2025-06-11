@@ -90,7 +90,7 @@ class RealEstateScraper(ABC):
         return False
 
     def proper_street(self, street_text):
-        keywords = ['Józefa Hallera', 'Hallera', 'Tadeusza Kościuszki', 'Kościuszki', 'Kosciuszki', 'Sochaczewska', 'Żywiecka', 'Zywiecka' 'Legionów', 'Legionow']
+        keywords = ['Józefa Hallera', 'Hallera', 'Tadeusza Kościuszki', 'Kościuszki', 'Kosciuszki', 'Sochaczewska', 'Żywiecka', 'Zywiecka', 'Legionów', 'Legionow']
         for word in keywords:
             if word in street_text:
                 return False
