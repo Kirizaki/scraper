@@ -19,7 +19,7 @@ class OlxScraper(RealEstateScraper):
         try:
             self.src = 'olx'
             offers = []
-            page = 1
+            page = 15
             last_real_page = None
             while True:
                 url = f"https://www.olx.pl/nieruchomosci/mieszkania/sprzedaz/gdansk/?page={page}&search%5Bdistrict_id%5D=99&search%5Border%5D=created_at%3Adesc"
@@ -28,9 +28,13 @@ class OlxScraper(RealEstateScraper):
                 soup = BeautifulSoup(self.driver.page_source, 'html.parser')
 
                 # Wyciągamy numer strony z URL
-                current_page = int(soup.find("li", class_="pagination-item__active").text.strip())
+                current_page_tag = soup.find("li", class_="pagination-item__active")
+                if current_page_tag is not None:
+                    current_page = int(current_page_tag.text.strip())
+                else:
+                    current_page = None
                 if current_page is None or current_page < page or current_page == last_real_page:
-                    print(f"\n   [{self.src}]Osiągnięto koniec listy ofert.")
+                    print(f"\t   [{self.src}]Osiągnięto koniec listy ofert.")
                     break
 
                 print(f"\n   [{self.src}] przeszukuje stronę (#{page}): {self.driver.current_url}")

@@ -11,6 +11,7 @@ BACKUP_DIR = "backup"
 # Blokada, aby synchronizować dostęp do pliku CSV
 csv_lock = threading.Lock()
 
+
 def init_csv():
     if not os.path.exists(CSV_FILE):
         with open(CSV_FILE, 'w', newline='', encoding='utf-8') as f:
@@ -31,10 +32,10 @@ def save_offer_backup(offer: dict, filename: str):
             writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
             writer.writerow(offer)
 
-from urllib.parse import urlparse
 
 def strip_url_fragment(url: str) -> str:
     return url.split('#')[0]
+
 
 def is_offer_saved(url: str) -> bool:
     if "obido" in url:
@@ -56,6 +57,7 @@ def is_offer_saved(url: str) -> bool:
                 return True
     return False
 
+
 def remove_duplicates():
     with csv_lock:  # Blokujemy dostęp do zapisu w pliku CSV
         seen = set()
@@ -74,6 +76,7 @@ def remove_duplicates():
             writer = csv.writer(csvfile)
             writer.writerow(header)
             writer.writerows(unique_rows)
+
 
 def backup_csv():
     with csv_lock:

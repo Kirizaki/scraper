@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 from datetime import datetime
-from twilio.rest import Client
 import smtplib
 from email.mime.text import MIMEText
 
@@ -40,21 +39,6 @@ def send_email_notification():
         print("✅ E-mail wysłany.")
 
 
-def send_whatsapp_notification():
-    account_sid = os.getenv('TWILIO_SID')
-    auth_token = os.getenv('TWILIO_AUTH_TOKEN')
-    from_whatsapp = os.getenv('TWILIO_WHATSAPP_FROM')
-    to_whatsapp = os.getenv('TWILIO_WHATSAPP_TO')
-
-    client = Client(account_sid, auth_token)
-    message = client.messages.create(
-        body=f'🆕 Nowe oferty mieszkań!\nSprawdź tutaj: {link}',
-        from_=from_whatsapp,
-        to=to_whatsapp
-    )
-    print(f"✅ WhatsApp wysłany. SID: {message.sid}")
-
-
 def main():
     # Zapisz czas aktualizacji do pliku
     with open("last_update.txt", "w") as f:
@@ -62,7 +46,6 @@ def main():
 
     if Path('/home/ubuntu/scraper/notify.flag').exists():
         send_email_notification()
-        send_whatsapp_notification()
         Path('/home/ubuntu/scraper/notify.flag').unlink()
     else:
         print("Brak nowych ofert.")
