@@ -21,26 +21,32 @@ def send_email_notification():
     smtp_port = int(os.getenv('SMTP_PORT', 587))
     smtp_user = os.getenv('SMTP_USER')
     smtp_password = os.getenv('SMTP_PASSWORD')
-    recipient = os.getenv('EMAIL_RECIPIENT')
+    recipients = os.getenv('EMAIL_RECIPIENTS')
+    if recipients == None:
+        print("Brak odbiorców!")
+        return
+    else:
+        recipients = recipients.split(',')
 
+    print(f"Odbiorców: {len(recipients)}")
     subject = "[SCRAPER] 📢 Nowe oferty mieszkań!"
 
-    msg = MIMEText(body, "html")
-    msg["Subject"] = subject
-    msg["From"] = smtp_user
-    msg["To"] = recipient
+    for recipient in recipients:
+        msg = MIMEText(body, "html")
+        msg["Subject"] = subject
+        msg["From"] = smtp_user
+        msg["To"] = recipient
 
-    with smtplib.SMTP(smtp_server, smtp_port) as server:
-        server.ehlo()
-        server.starttls()
-        server.ehlo()
-        server.login(smtp_user, smtp_password)
-        server.send_message(msg)
-        print("✅ E-mail wysłany.")
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
+            server.login(smtp_user, smtp_password)
+            server.send_message(msg)
+            print("✅ E-mail wysłany.")
 
 
 def main():
-    # Zapisz czas aktualizacji do pliku
     with open("last_update.txt", "w") as f:
         f.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
