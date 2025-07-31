@@ -9,6 +9,7 @@ BASE_URL = "http://nportal.pl"
 
 class NportalScraper(RealEstateScraper):
     def scrape(self):
+        self.src = 'nportal'
         offers = []
         page = 1
         while page < 999:
