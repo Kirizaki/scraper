@@ -14,7 +14,7 @@ class TrojmiastoScraper(RealEstateScraper):
         self.src = 'trojmiasto'
         self.counter = 0
         while True:
-            url = f"{BASE_URL}/nieruchomosci/mieszkanie/ai,_1500000,e1i,142_2,ikl,101_106,qi,_120,si,-1_-1,o1,1.html?strona={page}"
+            url = f"{BASE_URL}/nieruchomosci-sprzedam-rynek-wtorny/mieszkanie/ai,_1500000,e1i,32_142_2,ki,1,qi,_120,si,-1_,x1i,_18000,o1,1.html?strona={page}"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             if res.status_code != 200:
                 break
@@ -31,6 +31,21 @@ class TrojmiastoScraper(RealEstateScraper):
                     link = card.get('href')
                     if not link:
                         continue
+
+                    offer = {
+                        "url": link,
+                        "tytul": 'title',
+                        "cena": 'cena',
+                        "powierzchnia": 'area',
+                        "na_metr": 'price_per_m',
+                        "zrodlo": self.src,
+                        "data_dodania": self.date_now(),
+                        "fav": '0',
+                        "hide": '0'
+                    }
+                    offers.append(offer)
+                    save_offer_backup(offer, self.src+".csv")
+                    continue
 
                     self.counter += 1
                     detail_res = requests.get(link, headers={"User-Agent": "Mozilla/5.0"})
