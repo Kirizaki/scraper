@@ -29,7 +29,7 @@ class OtodomScraper(RealEstateScraper):
                 break
 
             print(f"\n   [{self.src}] przeszukuje stronę (#{page}): {url}")
-            offer_articles = soup.find_all("article", attrs={"data-cy": "listing-item"})
+            offer_articles = soup.find_all("article", class_="css-xv0nyo e1r1j5800")
             if not offer_articles:
                 break
 
@@ -37,7 +37,9 @@ class OtodomScraper(RealEstateScraper):
             for offer in offer_articles:
                 try:
                     address = offer.find("p", class_="css-1jjm9oe e13d3jhg1") or offer.find("p", class_="css-42r2ms eejmx80")
-                    if not address or "wrzeszcz" not in address.text.lower():
+                    if not address:
+                        continue
+                    if "wrzeszcz" not in address.text.lower() or "oliwa" not in address.text.lower():
                         continue
 
                     street_text = offer.find('p', class_="css-42r2ms eejmx80").text
