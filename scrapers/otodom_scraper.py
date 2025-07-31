@@ -33,14 +33,32 @@ class OtodomScraper(RealEstateScraper):
             if not offer_articles:
                 break
 
-            link = 'pierwszy_link'
             for offer in offer_articles:
                 try:
+                    link = BASE_URL + offer.find("a")['href'].split('?')[0]
                     address = offer.find("p", class_="css-1jjm9oe e13d3jhg1") or offer.find("p", class_="css-42r2ms eejmx80")
                     if not address:
                         continue
-                    if "wrzeszcz" not in address.text.lower() or "oliwa" not in address.text.lower():
+                    if not ("wrzeszcz" in address.text.lower() or "oliwa" in address.text.lower()):
                         continue
+                    # TODO: Playwright!
+                    offer = {
+                        "url": link,
+                        "tytul": 'title',
+                        "cena": 'cena',
+                        "powierzchnia": 'area',
+                        "na_metr": 'm2',
+                        "zrodlo": self.src,
+                        "data_dodania": self.date_now(),
+                        "fav": '0',
+                        "hide": '0'
+                    }
+                    self.counter += 1
+                    offers.append(offer)
+                    save_offer_backup(offer, self.src+".csv")
+                    continue
+
+                    # TODO: Playwright!
 
                     street_text = offer.find('p', class_="css-42r2ms eejmx80").text
                     if self.has_street(street_text) and not self.proper_street(street_text):
@@ -51,7 +69,7 @@ class OtodomScraper(RealEstateScraper):
 
                     detail_res = requests.get(link, headers={"User-Agent": "Mozilla/5.0"})
                     detail_soup = BeautifulSoup(detail_res.text, "html.parser")
-                    details = detail_soup.find_all("span", class_="css-axw7ok esen0m94")
+                    details = detail_soup.find("div", class_="css-8mnxk5 e1wd2yzk0")
                     if not self.has_garden_in_additional_info(details):
                         continue
 

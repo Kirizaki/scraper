@@ -15,7 +15,7 @@ class GratkaScraper(RealEstateScraper):
         page = 1
         self.src = 'gratka'
         while True:
-            url = f"{BASE_URL}/nieruchomosci/mieszkania/gdansk/wrzeszcz?cena-calkowita:min=300000&cena-calkowita:max=10000000&sort=newest&page={page}"
+            url = f"{BASE_URL}/nieruchomosci/mieszkania/gdansk/wrzeszcz/wtorny?page={page}&cena-calkowita:max=10000000&cena-calkowita:min=300000&cena-za-m2:max=18000&location[text_queue][0]=Gda%C5%84sk+Wrzeszcz&location[text_queue][1]=Gda%C5%84sk+Oliwa&pietro:max=1&pietro:min=-1&powierzchnia-w-m2:max=120&sort=newest"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             soup = BeautifulSoup(res.text, "html.parser")
 
@@ -25,7 +25,7 @@ class GratkaScraper(RealEstateScraper):
 
             print(f"\n   [{self.src}] przeszukuje stronę (#{page}): {url}")
 
-            offer_articles = soup.find_all("a", class_="RGqjO2 undefined")
+            offer_articles = soup.find_all("a", class_="undefined")
             if not offer_articles:
                 break
 
@@ -37,7 +37,20 @@ class GratkaScraper(RealEstateScraper):
                     if not link_tag:
                         continue
                     link = f"{BASE_URL}{link_tag}"
-
+                    offer = {
+                        "url": link,
+                        "tytul": 'title',
+                        "cena": 'cena',
+                        "powierzchnia": 'area',
+                        "na_metr": 'per_meter',
+                        "zrodlo": self.src,
+                        "data_dodania": self.date_now(),
+                        "fav": '0',
+                        "hide": '0'
+                    }
+                    offers.append(offer)
+                    save_offer_backup(offer, self.src + ".csv")
+                    continue
                     detail_res = requests.get(link, headers={"User-Agent": "Mozilla/5.0"})
                     detail_soup = BeautifulSoup(detail_res.text, "html.parser")
                     body_text = detail_soup.find('div', class_="Dx7LS- OUtXFF ofQE0x").text.strip()
@@ -114,7 +127,7 @@ class GratkaScraper(RealEstateScraper):
 
     def extract_page_number(self, soup):
         try:
-            return int(soup.find('a', class_="router-link-active router-link-exact-active").text.strip())
+            return int(soup.find('div', class_="ya4L5R DvF8Nd gqHqwE cHFm-Y UarIj0").text.strip())
         except:
             return None
 

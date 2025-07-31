@@ -20,7 +20,7 @@ def main():
     start = time.time()
     init_csv()
 
-    scrapers = [ObidoScraper, GratkaScraper, OlxScraper, OtodomScraper, AdresowoScraper, MorizonScraper, NieruchomosciOnlineScraper, TrojmiastoScraper]
+    scrapers = [GratkaScraper, OlxScraper, OtodomScraper, AdresowoScraper, MorizonScraper, NieruchomosciOnlineScraper, TrojmiastoScraper]
 
     offers_all = []
     with ThreadPoolExecutor(max_workers=len(scrapers)) as executor:
@@ -34,11 +34,14 @@ def main():
 
     new_count = 0
     for offer in offers_all:
-        if not is_offer_saved(offer["url"]):
-            offer["data_dodania"] = datetime.now().strftime("%H:%M-%d-%m-%Y")
-            save_offer(offer)
-            print(f"✅ Zapisano nową ofertę: {offer['url']}")
-            new_count += 1
+        try:
+            if not is_offer_saved(offer["url"]):
+                offer["data_dodania"] = datetime.now().strftime("%H:%M-%d-%m-%Y")
+                save_offer(offer)
+                print(f"✅ Zapisano nową ofertę: {offer['url']}")
+                new_count += 1
+        except Exception as e:
+            print(f"Error while saving offer: {offer}\n\tERROR:\n{e}")
 
     if new_count > 0:
         with open('notify.flag', 'w') as f:

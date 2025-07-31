@@ -27,8 +27,24 @@ class ObidoScraper(RealEstateScraper):
                     full_url = "https://obido.pl" + href
                     detail = requests.get(full_url, headers={"User-Agent": "Mozilla/5.0"})
                     detail_soup = BeautifulSoup(detail.text, "html.parser")
-                    if not 'wrzeszcz' in detail_soup.find('ol', class_="breadcrumb").text.strip().lower():
+                    district = detail_soup.find('ol', class_="breadcrumb").text.strip().lower()
+                    if not self.check_district(district):
                         continue
+
+                    offer = {
+                        "url": full_url,
+                        "tytul": 'title',
+                        "cena": 'cena',
+                        "powierzchnia": 'area',
+                        "na_metr": 'price_per_m',
+                        "zrodlo": self.src,
+                        "data_dodania": self.date_now(),
+                        "fav": '0',
+                        "hide": '0'
+                    }
+                    offers.append(offer)
+                    save_offer_backup(offer, self.src+".csv")
+                    continue
 
                     title = detail_soup.find('h1').text.strip()
                     text = detail_soup.find('section', class_="section-block investment-flat-detail").text.strip()
@@ -72,6 +88,11 @@ class ObidoScraper(RealEstateScraper):
             time.sleep(1)
         self.log()
         return offers
+
+    def check_district(self, text):
+        if "wrzeszcz" in text or "oliwa" in text:
+            return True
+        return False
 
     def extract_floor(self, text: str) -> int:
         """

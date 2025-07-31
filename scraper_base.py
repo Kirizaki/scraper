@@ -9,7 +9,7 @@ class RealEstateScraper(ABC):
     def __init__(self) -> None:
         self.counter = 0
         self.src = '..'
-        self.keywords = ["ogród", "ogrod", "ogrodek", "ogródek", "z ogrodem", "dostęp do ogrodu", "dostep do ogrodu", "balkon", "taras", "loggia", "galeria", "weranda", "przybudówka", "dziedziniec", "patio", "podest", "platforma"]
+        self.keywords = ["ogród", "ogrod", "ogrodek", "ogródek", "z ogrodem", "dostęp do ogrodu", "dostep do ogrodu", "balkon", "taras", "loggia", "galeria", "weranda", "przybudówka", "dziedziniec", "patio", "podest", "platforma", "działka", "dzialka"]
         self.max_on_meter = 17000
         self.min_area = 50
         self.max_area = 125
