@@ -13,8 +13,8 @@ class AdresowoScraper(RealEstateScraper):
         page = 1
         self.src = 'adresowo'
         while True:
-            postfix = f"l{page}od"
-            url = f"{BASE_URL}/f/mieszkania/gdansk/wrzeszcz/{postfix}"
+            postfix = f"fuz_l{page}od"
+            url = f"{BASE_URL}/f/mieszkania/gdansk/321587_321551/{postfix}"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             if page > 1:
                 # strona ostatnia+1 usuwa numerek strony z URL
@@ -36,6 +36,21 @@ class AdresowoScraper(RealEstateScraper):
                     if not link_tag:
                         continue
                     link = BASE_URL + link_tag
+
+                    offer = {
+                        "url": link,
+                        "tytul": 'title',
+                        "cena": 'cena',
+                        "powierzchnia": 'area',
+                        "na_metr": 'per_meter',
+                        "zrodlo": self.src,
+                        "data_dodania": self.date_now(),
+                        "fav": '0',
+                        "hide": '0'
+                    }
+                    offers.append(offer)
+                    save_offer_backup(offer, self.src+".csv")
+                    continue
 
                     detail_res = requests.get(link, headers={"User-Agent": "Mozilla/5.0"})
                     detail_soup = BeautifulSoup(detail_res.text, "html.parser")
