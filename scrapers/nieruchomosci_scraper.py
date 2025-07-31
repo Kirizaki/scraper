@@ -14,7 +14,7 @@ class NieruchomosciOnlineScraper(RealEstateScraper):
         self.src = 'nieruchomosci'
         current_page_number = page
         while True:
-            url = f"{BASE_URL}/szukaj.html?3,mieszkanie,sprzedaz,,Gda%C5%84sk:7183,Wrzeszcz%20G%C3%B3rny:23156,,,-1500000,50-120&p={page}"
+            url = f"{BASE_URL}/szukaj.html?3,mieszkanie,sprzedaz,,Gda%C5%84sk:7183,,,,-1500000,50-120,,,,,,,,,,,,,0-0,,,,,,,,,,,,1,,,,1&p={page}"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             soup = BeautifulSoup(res.text, "html.parser")
             try:
@@ -38,6 +38,24 @@ class NieruchomosciOnlineScraper(RealEstateScraper):
                     link = offer.get('href')
                     if not link:
                         continue
+                    detail_res = requests.get(link, headers={"User-Agent": "Mozilla/5.0"})
+                    detail_soup = BeautifulSoup(detail_res.text, "html.parser")
+                    address = detail_soup.find("div", class_="box-offer-top").text.strip()
+                    if "wrzeszcz" in address or "oliwa" in address.lower():
+                        offer = {
+                            "url": link,
+                            "tytul": 'title',
+                            "cena": 'cena',
+                            "powierzchnia": 'area',
+                            "na_metr": 'price_per_m',
+                            "zrodlo": self.src,
+                            "data_dodania": self.date_now(),
+                            "fav": '0',
+                            "hide": '0'
+                        }
+                        offers.append(offer)
+                        save_offer_backup(offer, self.src+".csv")
+                    continue
 
                     self.counter += 1
                     detail_res = requests.get(link, headers={"User-Agent": "Mozilla/5.0"})
