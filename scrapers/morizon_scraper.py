@@ -14,7 +14,7 @@ class MorizonScraper(RealEstateScraper):
         page = 1
 
         while True:
-            url = f"{BASE_URL}/mieszkania/najnowsze/gdansk/wrzeszcz/?page={page}"
+            url = f"{BASE_URL}/mieszkania/najnowsze/gdansk/wrzeszcz/?ps%5Bfloor_from%5D=-1&ps%5Bfloor_to%5D=1&ps%5Bhas_garden%5D=1&ps%5Bliving_area_to%5D=120&ps%5Blocation%5D%5Btext_queue%5D%5B0%5D=Gda%C5%84sk%20Wrzeszcz&ps%5Blocation%5D%5Btext_queue%5D%5B1%5D=Gda%C5%84sk%20Oliwa&ps%5Bmarket_type%5D=2&ps%5Bprice_m2_to%5D=18000?page={page}"
             res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
             if page > 1:
                 real_page = self.extract_page_number(res.url)
@@ -23,7 +23,7 @@ class MorizonScraper(RealEstateScraper):
 
             print(f"\n   [{self.src}] przeszukuje stronę (#{page}): {url}")
             soup = BeautifulSoup(res.text, "html.parser")
-            offer_articles = soup.find_all("a", class_="RGqjO2")
+            offer_articles = soup.find_all("a", class_="iKasml")
             if not offer_articles:
                 break
 
@@ -32,6 +32,20 @@ class MorizonScraper(RealEstateScraper):
                 try:
                     self.counter += 1
                     link = BASE_URL + offer.get("href")
+                    offer = {
+                        "url": link,
+                        "tytul": 'title',
+                        "cena": 'cena',
+                        "powierzchnia": 'powierzchnia',
+                        "na_metr": 'per_meter',
+                        "zrodlo": self.src,
+                        "data_dodania": self.date_now(),
+                        "fav": '0',
+                        "hide": '0'
+                    }
+                    offers.append(offer)
+                    save_offer_backup(offer, self.src+".csv")
+                    continue
                     detail_res = requests.get(link, headers={"User-Agent": "Mozilla/5.0"})
                     if not detail_res:
                         print(f"\n   [{self.src}] brak RESPONSE (#{page}): {url}")
