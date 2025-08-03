@@ -11,6 +11,7 @@ WSGI_PORT = 5555
 WSGI_FILE = "wsgi.py"
 WYNIKI_FILE = "wyniki.csv"
 MAIN_SCRIPT = "main.py"
+DEDUPE_SCRIPT = "dedupe.py"
 
 
 def is_port_in_use(port):
@@ -58,6 +59,12 @@ def run_main():
     subprocess.run(["python3", MAIN_SCRIPT])
 
 
+def run_deduper():
+    """Run the dedupe.py script."""
+    print("Running dedpe.py...")
+    subprocess.run(["python3", DEDUPE_SCRIPT])
+
+
 if __name__ == "__main__":
     # Restart or start the WSGI server
     if is_port_in_use(WSGI_PORT):
@@ -73,6 +80,9 @@ if __name__ == "__main__":
 
     # Run main.py
     run_main()
+
+    # Run dedupe.py
+    run_deduper()
 
     # Optional: keep the server alive, or terminate after main
     print("Controller script finished.")
